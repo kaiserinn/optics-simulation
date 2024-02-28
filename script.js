@@ -10,6 +10,9 @@ let d_i;
 let h_o;
 let h_i;
 
+let sim;
+let type;
+
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("canvas");
 
@@ -273,6 +276,10 @@ const drawImage = (ctx) => {
 const drawFocal = (ctx) => {
   ctx.fillStyle = "black";
   ctx.fillRect(X_ORIGIN-f*SCALE-2, Y_ORIGIN-2, 4, 4);
+
+  if (sim === -1) {
+    ctx.fillRect(X_ORIGIN+f*SCALE-2, Y_ORIGIN-2, 4, 4);
+  }
 }
 
 /**
@@ -281,6 +288,10 @@ const drawFocal = (ctx) => {
 const drawCurvature = (ctx) => {
   ctx.fillStyle = "black";
   ctx.fillRect(X_ORIGIN-f*2*SCALE-2, Y_ORIGIN-2, 4, 4);
+
+  if (sim === -1) {
+    ctx.fillRect(X_ORIGIN+f*2*SCALE-2, Y_ORIGIN-2, 4, 4);
+  }
 }
 
 window.addEventListener("resize", () => { CANVAS_WIDTH = window.innerWidth;
@@ -310,6 +321,8 @@ const update = () => {
 
   const selectedSim = document.querySelector("input[name='sim']:checked");
   const selectedType = document.querySelector("input[name='type']:checked");
+  sim = Number(selectedSim.value);
+  type = Number(selectedType.value);
 
   f = Number(selectedType.value) * Number(focalLength.value);
   d_o = Number(objDistance.value);
@@ -324,7 +337,12 @@ const update = () => {
   drawFocal(ctx);
   drawCurvature(ctx);
   drawLabels(ctx);
-  drawRay(ctx);
+  
+  if (Number(selectedSim.value) === 1) {
+    drawRay(ctx);
+  } else {
+    drawRayLens(ctx);
+  }
 }
 
 /**
@@ -384,6 +402,48 @@ const drawRay = (ctx) => {
   // }
 }
 
+const drawRayLens = (ctx) => {
+  const objX = -d_o * SCALE;
+  const objY = h_o * SCALE;
+  const imgX = -d_i * SCALE;
+  const imgY = h_i * SCALE;
+  const focalPos = -f * SCALE;
+
+  // rule 1
+  if (f !== d_o) {
+    dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"green"});
+    if (type === -1) {
+      ddaRay(ctx, 0, objY, focalPos, 0, {color:"green", isVirtual:true});
+      // ddaRay(ctx, 0, objY, imgX, imgY, {color:"green", isVirtual:true});
+    } else {
+      ddaRay(ctx, 0, objY, focalPos, 0, {color:"green", isVirtual:true});
+      ddaRay(ctx, focalPos, 0, 0, objY, {color:"green"})
+    }
+  }
+
+  // rule 2
+  // ddaRay(ctx, objX, objY, 0, 0, {color:"teal", isVirtual:true});
+  // ddaRay(ctx, imgX, imgY, 0, 0, {color:"teal", isVirtual:true});
+
+  // rule 3
+  if (type === -1) {
+    dda(ctx, CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+    ddaRay(ctx, 0, imgY, -focalPos, 0, {color:"purple"});
+    if (d_i > 0) {
+      dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+    } 
+  } else {
+    if (d_o !== 0) {
+      dda(ctx, CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+      dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+      ddaRay(ctx, 0, imgY, objX, objY, {color:"purple"});
+    } else if (d_o === 0) {
+      dda(ctx, CANVAS_WIDTH/2, objY, 0, objY, {color:"purple"});
+      dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"purple"});
+    }
+  }
+}
+
 const drawLabels = (ctx) => {
   const objX = X_ORIGIN - d_o * SCALE;
   const objY = Y_ORIGIN - h_o * SCALE;
@@ -404,8 +464,15 @@ const drawLabels = (ctx) => {
 
   ctx.fillText("Fokus", focalPos, Y_ORIGIN);
   ctx.fillText(f, focalPos, Y_ORIGIN+fontSize);
+  if (sim === -1) {
+    ctx.fillText("Fokus", X_ORIGIN + f * SCALE, Y_ORIGIN);
+    ctx.fillText(-f, X_ORIGIN + f * SCALE, Y_ORIGIN+fontSize);
+  }
 
   ctx.fillText("Kurvatur", curvaturePos, Y_ORIGIN);
+  if (sim === -1) {
+    ctx.fillText("Kurvatur", X_ORIGIN + f*2 * SCALE, Y_ORIGIN);
+  }
 }
 
 update();
