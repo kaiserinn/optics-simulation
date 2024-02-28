@@ -10,19 +10,33 @@
   <body>
     <canvas id="canvas"></canvas>
 
+
+    <div class="container">
+      <div class="menu">
+        <input type="checkbox" id="checkbox-menu" hidden>
+        <label for="checkbox-menu">=</label> 
+      </div>
+
+      <div class="buttons-container">
+        <div class="radio">
+          <input type="radio" class="radio-input" id="mirror" name="sim" value=1 checked hidden>
+          <label for="mirror">Cermin</label>
+
+          <input type="radio" class="radio-input" id="lens" name="sim" value=-1 hidden>
+          <label for="lens">Lensa</label>
+        </div>
+
+        <div class="radio">
+          <input type="radio" class="radio-input" id="concave" name="type" value=1 checked hidden>
+          <label for="concave">Cekung</label>
+
+          <input type="radio" class="radio-input" id="convex" name="type" value=-1 hidden>
+          <label for="convex">Cembung</label>
+        </div>
+      </div>
+    </div>
+    
     <div class="inputs-outer-container">
-      <div class="radio">
-        <input type="radio" id="mirror" name="sim" value=1 checked>
-        <label for="mirror">Cermin</label>
-        <input type="radio" id="lens" name="sim" value=-1>
-        <label for="lens">Lensa</label>
-      </div>
-      <div class="radio">
-        <input type="radio" id="concave" name="type" value=1 checked>
-        <label for="concave">Cekung</label>
-        <input type="radio" id="convex" name="type" value=-1>
-        <label for="convex">Cembung</label>
-      </div>
       <div class="inputs-container">
         <label for="distance-slider">do</label>
         <input type="range" min=0 step=0.01 value=5 id="distance-slider">

@@ -61,6 +61,9 @@ for (let i = 0; i < typeSelections.length; i++) {
   })
 }
 
+const menu = document.getElementById('checkbox-menu');
+menu.addEventListener("input", () => update());
+
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  * @param {number} x1 Titik x awal
@@ -294,6 +297,17 @@ window.addEventListener("resize", () => { CANVAS_WIDTH = window.innerWidth;
 const update = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+  const menu = document.getElementById('checkbox-menu');
+  const label = document.querySelector('.menu > label');
+  const buttonsContainerEl = document.getElementsByClassName('buttons-container');
+  if (menu.checked) {
+    buttonsContainerEl[0].style.display = "flex";
+    label.innerHTML = "x";
+  } else {
+    buttonsContainerEl[0].style.display = "none";
+    label.innerHTML = "=";
+  }
+
   const selectedSim = document.querySelector("input[name='sim']:checked");
   const selectedType = document.querySelector("input[name='type']:checked");
 
@@ -395,3 +409,5 @@ const drawLabels = (ctx) => {
 }
 
 update();
+
+
