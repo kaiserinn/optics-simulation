@@ -246,6 +246,10 @@ const drawBase = (ctx) => {
 const drawObject = (ctx) => {
   dda(ctx, -d_o*SCALE, 0, -d_o*SCALE, h_o*SCALE, {color:"red"});
   dda(ctx, (-0.3*h_o*SCALE) + (-d_o*SCALE), 0.8*h_o*SCALE, 0.3*h_o*SCALE + (-d_o*SCALE), 0.8*h_o*SCALE, {color:"red"});
+  dda(ctx, (-0.3*h_o*SCALE) + (-d_o*SCALE), 0.8*h_o*SCALE, -d_o*SCALE, h_o*SCALE, {color:"red"});
+  dda(ctx, 0.3*h_o*SCALE + (-d_o*SCALE), 0.8*h_o*SCALE, -d_o*SCALE, h_o*SCALE, {color:"red"});
+  dda(ctx, (-0.3*h_o*SCALE) + (-d_o*SCALE), 0.8*h_o*SCALE, -d_o*SCALE, 0, {color:"red"});
+  dda(ctx, 0.3*h_o*SCALE + (-d_o*SCALE), 0.8*h_o*SCALE, -d_o*SCALE, 0, {color:"red"});
 }
 
 /**
@@ -254,6 +258,10 @@ const drawObject = (ctx) => {
 const drawImage = (ctx) => {
   dda(ctx, -d_i*SCALE, 0, -d_i*SCALE, h_i*SCALE, {color:"blue"});
   dda(ctx, (-0.3*h_i*SCALE) + (-d_i*SCALE), 0.8*h_i*SCALE, 0.3*h_i*SCALE + (-d_i*SCALE), 0.8*h_i*SCALE, {color:"blue"});
+  dda(ctx, (-0.3*h_i*SCALE) + (-d_i*SCALE), 0.8*h_i*SCALE, -d_i*SCALE, h_i*SCALE, {color:"blue"});
+  dda(ctx, 0.3*h_i*SCALE + (-d_i*SCALE), 0.8*h_i*SCALE, -d_i*SCALE, h_i*SCALE, {color:"blue"});
+  dda(ctx, (-0.3*h_i*SCALE) + (-d_i*SCALE), 0.8*h_i*SCALE, -d_i*SCALE, 0, {color:"blue"});
+  dda(ctx, 0.3*h_i*SCALE + (-d_i*SCALE), 0.8*h_i*SCALE, -d_i*SCALE, 0, {color:"blue"});
 }
 
 /**
@@ -294,13 +302,14 @@ const update = () => {
   h_o = Number(objHeight.value);
 
   d_i = 1 / (1/f - 1/ (Number(selectedSim.value) * d_o));
-  h_i = (-d_i / d_o) * h_o;
+  h_i = (-d_i / (Number(selectedSim.value) * d_o)) * h_o;
 
   drawBase(ctx);
   drawObject(ctx);
   drawImage(ctx);
   drawFocal(ctx);
   drawCurvature(ctx);
+  drawLabels(ctx);
   drawRay(ctx);
 }
 
@@ -315,17 +324,17 @@ const drawRay = (ctx) => {
   const focalPos = -f * SCALE;
 
   // rule 1
-  // if (f > 0) {
-  //   dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"green"});
-  //   ddaRay(ctx, 0, objY, focalPos, 0, {color:"green"});
-  //   if (h_i > 0) {
-  //     ddaRay(ctx, 0, objY, imgX, imgY, {color:"green", style:"dashed"});
-  //   }
-  // } else {
-  //   dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"green"});
-  //   ddaRay(ctx, 0, objY, focalPos, 0, {color:"green", isVirtual:true, style:"dashed"});
-  //   ddaRayMod(ctx, focalPos, 0, 0, objY, {color:"green", style:"dashed"});
-  // }
+  if (f > 0) {
+    dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"green"});
+    ddaRay(ctx, 0, objY, focalPos, 0, {color:"green"});
+    if (h_i > 0) {
+      ddaRay(ctx, 0, objY, imgX, imgY, {color:"green", style:"dashed"});
+    }
+  } else {
+    dda(ctx, -CANVAS_WIDTH/2, objY, 0, objY, {color:"green"});
+    ddaRay(ctx, 0, objY, focalPos, 0, {color:"green", isVirtual:true, style:"dashed"});
+    ddaRayMod(ctx, focalPos, 0, 0, objY, {color:"green", style:"dashed"});
+  }
 
   //rule 2
   // ddaRay(ctx, objX, objY, 2*focalPos, 0, {color:"orange", isVirtual:true});
@@ -336,19 +345,19 @@ const drawRay = (ctx) => {
   // }
 
   // rule 3
-  // if (f !== d_o) {
-  //   dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
-  //   if (h_i < 0) {
-  //     ddaRay(ctx, 0, imgY, focalPos, 0, {color:"purple"});
-  //   } else if (h_i > 0) {
-  //     dda(ctx, 0, imgY, CANVAS_WIDTH/2, imgY, {color:"purple", style:"dashed"});
-  //     if (f > 0) {
-  //       ddaRay(ctx, 0, imgY, focalPos, 0, {color:"purple", isVirtual:true});
-  //     } else {
-  //       ddaRay(ctx, 0, imgY, objX, objY, {color:"purple"});
-  //     }
-  //   }
-  // }
+  if (f !== d_o) {
+    dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+    if (h_i < 0) {
+      ddaRay(ctx, 0, imgY, focalPos, 0, {color:"purple"});
+    } else if (h_i > 0) {
+      dda(ctx, 0, imgY, CANVAS_WIDTH/2, imgY, {color:"purple", style:"dashed"});
+      if (f > 0) {
+        ddaRay(ctx, 0, imgY, focalPos, 0, {color:"purple", isVirtual:true});
+      } else {
+        ddaRay(ctx, 0, imgY, objX, objY, {color:"purple"});
+      }
+    }
+  }
 
   // rule 4
   // if (d_o !== 0) {
@@ -359,6 +368,30 @@ const drawRay = (ctx) => {
   //     // ddaRay(ctx, 0, 0, -d_i*SCALE, h_i*SCALE, {color:"teal", style:"dashed"});
   //   }
   // }
+}
+
+const drawLabels = (ctx) => {
+  const objX = X_ORIGIN - d_o * SCALE;
+  const objY = Y_ORIGIN - h_o * SCALE;
+  const imgX = X_ORIGIN - d_i * SCALE;
+  const imgY = Y_ORIGIN - h_i * SCALE;
+  const focalPos = X_ORIGIN - f * SCALE;
+  const curvaturePos = X_ORIGIN - f*2 * SCALE;
+
+  const fontSize = 14;
+  ctx.font = `${fontSize}px JetBrainsMono Nerd`;
+  ctx.fillText("Objek", objX, objY);
+  ctx.fillText(d_o, objX, Y_ORIGIN+fontSize);
+  ctx.fillText(h_o, X_ORIGIN, objY);
+
+  ctx.fillText("Bayangan", imgX, imgY);
+  ctx.fillText(Math.round(d_i*100)/100, imgX, Y_ORIGIN+fontSize);
+  ctx.fillText(Math.round(h_i*100)/100, X_ORIGIN, imgY);
+
+  ctx.fillText("Fokus", focalPos, Y_ORIGIN);
+  ctx.fillText(f, focalPos, Y_ORIGIN+fontSize);
+
+  ctx.fillText("Kurvatur", curvaturePos, Y_ORIGIN);
 }
 
 update();
