@@ -245,6 +245,7 @@ const drawBase = (ctx) => {
  */
 const drawObject = (ctx) => {
   dda(ctx, -d_o*SCALE, 0, -d_o*SCALE, h_o*SCALE, {color:"red"});
+  dda(ctx, (-0.3*h_o*SCALE) + (-d_o*SCALE), 0.8*h_o*SCALE, 0.3*h_o*SCALE + (-d_o*SCALE), 0.8*h_o*SCALE, {color:"red"});
 }
 
 /**
@@ -252,6 +253,7 @@ const drawObject = (ctx) => {
  */
 const drawImage = (ctx) => {
   dda(ctx, -d_i*SCALE, 0, -d_i*SCALE, h_i*SCALE, {color:"blue"});
+  dda(ctx, (-0.3*h_i*SCALE) + (-d_i*SCALE), 0.8*h_i*SCALE, 0.3*h_i*SCALE + (-d_i*SCALE), 0.8*h_i*SCALE, {color:"blue"});
 }
 
 /**
@@ -291,8 +293,7 @@ const update = () => {
   d_o = Number(objDistance.value);
   h_o = Number(objHeight.value);
 
-  d_i = 1 / (1/f - 1/d_o);
-  h_i = (-d_i / d_o) * h_o;
+  d_i = 1 / (1/f - 1/ (Number(selectedSim.value) * d_o));
   h_i = (-d_i / d_o) * h_o;
 
   drawBase(ctx);
