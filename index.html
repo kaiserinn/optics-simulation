@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Physics Simulation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="style.css" rel="stylesheet">
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <div class="inputs-outer-container">
+      <div class="radio">
+        <input type="radio" id="mirror" name="sim" value=1 checked>
+        <label for="mirror">Cermin</label>
+        <input type="radio" id="lens" name="sim" value=-1>
+        <label for="lens">Lensa</label>
+      </div>
+      <div class="radio">
+        <input type="radio" id="concave" name="type" value=1 checked>
+        <label for="concave">Cekung</label>
+        <input type="radio" id="convex" name="type" value=-1>
+        <label for="convex">Cembung</label>
+      </div>
+      <div class="inputs-container">
+        <label for="distance-slider">do</label>
+        <input type="range" min=0 step=0.01 value=5 id="distance-slider">
+        <input type="number" id="distance-input" class="input-number">
+      </div>
+      <div class="inputs-container">
+        <label for="height-slider">ho</label>
+        <input type="range" min=0 step=0.01 value=3 id="height-slider">
+        <input type="number" id="height-input" class="input-number">
+      </div>
+      <div class="inputs-container">
+        <label for="focal-slider">f&nbsp;</label>
+        <input type="range" min=0 step=0.01 value=2 id="focal-slider">
+        <input type="number" id="focal-input" class="input-number">
+      </div>
+    </div>
+  </body>
+</html>
