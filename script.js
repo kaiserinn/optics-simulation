@@ -427,11 +427,13 @@ const drawRayLens = (ctx) => {
 
   // rule 3
   if (type === -1) {
-    dda(ctx, CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
-    ddaRay(ctx, 0, imgY, -focalPos, 0, {color:"purple"});
-    if (d_i > 0) {
-      dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
-    } 
+    if (d_o !== 0) {
+      dda(ctx, CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+      ddaRay(ctx, 0, imgY, -focalPos, 0, {color:"purple"});
+      if (d_i > 0) {
+        dda(ctx, -CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});
+      } 
+    }
   } else {
     if (d_o !== 0) {
       dda(ctx, CANVAS_WIDTH/2, imgY, 0, imgY, {color:"purple"});

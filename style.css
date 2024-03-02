@@ -70,10 +70,11 @@
   cursor: pointer;
   display: block;
   text-align: center;
+  opacity: 50%;
 }
 
 .radio-input:checked + label {
-  opacity: 50%;
+  opacity: 100%;
 }
 
 .menu > label {
