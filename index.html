@@ -2,55 +2,54 @@
 <html lang="en">
   <head>
     <title>Physics Simulation</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="style.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="style.css" rel="stylesheet" />
     <script defer src="script.js"></script>
   </head>
   <body>
     <canvas id="canvas"></canvas>
 
-
     <div class="container">
       <div class="menu">
-        <input type="checkbox" id="checkbox-menu" hidden>
-        <label for="checkbox-menu">=</label> 
+        <input type="checkbox" id="checkbox-menu" hidden />
+        <label for="checkbox-menu">=</label>
       </div>
 
       <div class="buttons-container">
         <div class="radio">
-          <input type="radio" class="radio-input" id="mirror" name="sim" value=1 checked hidden>
+          <input type="radio" class="radio-input" id="mirror" name="sim" value="1" checked hidden />
           <label for="mirror">Cermin</label>
 
-          <input type="radio" class="radio-input" id="lens" name="sim" value=-1 hidden>
+          <input type="radio" class="radio-input" id="lens" name="sim" value="-1" hidden />
           <label for="lens">Lensa</label>
         </div>
 
         <div class="radio">
-          <input type="radio" class="radio-input" id="concave" name="type" value=1 checked hidden>
+          <input type="radio" class="radio-input" id="concave" name="type" value="1" checked hidden />
           <label for="concave">Cekung</label>
 
-          <input type="radio" class="radio-input" id="convex" name="type" value=-1 hidden>
+          <input type="radio" class="radio-input" id="convex" name="type" value="-1" hidden />
           <label for="convex">Cembung</label>
         </div>
       </div>
     </div>
-    
+
     <div class="inputs-outer-container">
       <div class="inputs-container">
         <label for="distance-slider">do</label>
-        <input type="range" min=0 step=0.01 value=5 id="distance-slider">
-        <input type="number" id="distance-input" class="input-number">
+        <input type="range" min="0" step="0.01" value="5" id="distance-slider" />
+        <input type="number" id="distance-input" class="input-number" />
       </div>
       <div class="inputs-container">
         <label for="height-slider">ho</label>
-        <input type="range" min=0 step=0.01 value=3 id="height-slider">
-        <input type="number" id="height-input" class="input-number">
+        <input type="range" min="0" step="0.01" value="3" id="height-slider" />
+        <input type="number" id="height-input" class="input-number" />
       </div>
       <div class="inputs-container">
         <label for="focal-slider">f&nbsp;</label>
-        <input type="range" min=0 step=0.01 value=2 id="focal-slider">
-        <input type="number" id="focal-input" class="input-number">
+        <input type="range" min="0" step="0.01" value="2" id="focal-slider" />
+        <input type="number" id="focal-input" class="input-number" />
       </div>
     </div>
   </body>
