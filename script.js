@@ -76,6 +76,77 @@ const drawCircle = (ctx, cx, cy, r) => {
   }
 }
 
+let posX = 0;
+let posY = 0;
+let isHolding = {
+  focal: false,
+  object: false,
+}
+
+canvas.addEventListener("pointermove", (e) => {
+  posX = e.clientX;
+  posY = e.clientY;
+
+  if (isHolding.focal) {
+    if (type === 1) {
+      focalLength.value = (X_ORIGIN - posX) / SCALE;
+    } else {
+      console.log((X_ORIGIN + posX) / SCALE)
+      focalLength.value = (posX - X_ORIGIN) / SCALE;
+    }
+    update();
+  }
+
+  if (isHolding.object) {
+    objDistance.value = (X_ORIGIN - posX) / SCALE;
+    objHeight.value = (Y_ORIGIN - posY) / SCALE;
+    update();
+  }
+})
+
+canvas.addEventListener("pointerdown", () => {
+  if (isAroundFocal(posX, posY)) {
+    isHolding.focal = true;
+  }
+  if (isAroundObject(posX, posY)) {
+    isHolding.object = true;
+  }
+})
+
+canvas.addEventListener("pointerup", () => {
+  isHolding.focal = false;
+  isHolding.object = false;
+})
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+const isAroundFocal = (x, y) => {
+  return (
+    x >= X_ORIGIN - f * SCALE - 25 &&
+    x <= X_ORIGIN - f * SCALE + 25 &&
+    y >= Y_ORIGIN - 25 &&
+    y <= Y_ORIGIN + 25
+  )
+}
+
+
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+const isAroundObject = (x, y) => {
+  return (
+    x >= X_ORIGIN - d_o * SCALE - 25 &&
+    x <= X_ORIGIN - d_o * SCALE + 25 &&
+    y >= Y_ORIGIN - h_o * SCALE - 25 &&
+    y <= Y_ORIGIN - h_o * SCALE + 25
+  )
+}
+
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  * @param {number} x1 Titik x awal
@@ -195,24 +266,34 @@ const drawBase = (ctx) => {
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawObject = (ctx) => {
-  dda(ctx, -d_o * SCALE, 0, -d_o * SCALE, h_o * SCALE, { color: "red" });
-  dda(ctx, (-0.3 * h_o * SCALE) + (-d_o * SCALE), 0.8 * h_o * SCALE, 0.3 * h_o * SCALE + (-d_o * SCALE), 0.8 * h_o * SCALE, { color: "red" });
-  dda(ctx, (-0.3 * h_o * SCALE) + (-d_o * SCALE), 0.8 * h_o * SCALE, -d_o * SCALE, h_o * SCALE, { color: "red" });
-  dda(ctx, 0.3 * h_o * SCALE + (-d_o * SCALE), 0.8 * h_o * SCALE, -d_o * SCALE, h_o * SCALE, { color: "red" });
-  dda(ctx, (-0.3 * h_o * SCALE) + (-d_o * SCALE), 0.8 * h_o * SCALE, -d_o * SCALE, 0, { color: "red" });
-  dda(ctx, 0.3 * h_o * SCALE + (-d_o * SCALE), 0.8 * h_o * SCALE, -d_o * SCALE, 0, { color: "red" });
+  const width = (0.3 * h_o * SCALE) * 2;
+  const armHeight = 0.8 * h_o * SCALE;
+  const objX = -d_o * SCALE;
+  const objY = h_o * SCALE;
+
+  dda(ctx, objX, 0, objX, objY, { color: "red" });
+  dda(ctx, (-width / 2) + objX, armHeight, width / 2 + objX, armHeight, { color: "red" });
+  dda(ctx, (-width / 2) + objX, armHeight, objX, objY, { color: "red" });
+  dda(ctx, width / 2 + objX, armHeight, objX, objY, { color: "red" });
+  dda(ctx, (-width / 2) + objX, armHeight, objX, 0, { color: "red" });
+  dda(ctx, width / 2 + objX, armHeight, objX, 0, { color: "red" });
 }
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawImage = (ctx) => {
-  dda(ctx, -d_i * SCALE, 0, -d_i * SCALE, h_i * SCALE, { color: "blue" });
-  dda(ctx, (-0.3 * h_i * SCALE) + (-d_i * SCALE), 0.8 * h_i * SCALE, 0.3 * h_i * SCALE + (-d_i * SCALE), 0.8 * h_i * SCALE, { color: "blue" });
-  dda(ctx, (-0.3 * h_i * SCALE) + (-d_i * SCALE), 0.8 * h_i * SCALE, -d_i * SCALE, h_i * SCALE, { color: "blue" });
-  dda(ctx, 0.3 * h_i * SCALE + (-d_i * SCALE), 0.8 * h_i * SCALE, -d_i * SCALE, h_i * SCALE, { color: "blue" });
-  dda(ctx, (-0.3 * h_i * SCALE) + (-d_i * SCALE), 0.8 * h_i * SCALE, -d_i * SCALE, 0, { color: "blue" });
-  dda(ctx, 0.3 * h_i * SCALE + (-d_i * SCALE), 0.8 * h_i * SCALE, -d_i * SCALE, 0, { color: "blue" });
+  const width = (0.3 * h_i * SCALE) * 2;
+  const armHeight = 0.8 * h_i * SCALE;
+  const imgX = -d_i * SCALE;
+  const imgY = h_i * SCALE;
+
+  dda(ctx, imgX, 0, imgX, imgY, { color: "blue" });
+  dda(ctx, (-width / 2) + imgX, armHeight, width / 2 + imgX, armHeight, { color: "blue" });
+  dda(ctx, (-width / 2) + imgX, armHeight, imgX, imgY, { color: "blue" });
+  dda(ctx, width / 2 + imgX, armHeight, imgX, imgY, { color: "blue" });
+  dda(ctx, (-width / 2) + imgX, armHeight, imgX, 0, { color: "blue" });
+  dda(ctx, width / 2 + imgX, armHeight, imgX, 0, { color: "blue" });
 }
 
 /**
@@ -251,6 +332,9 @@ window.addEventListener("resize", () => {
   update();
 })
 
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
 const drawMirrorRay = (ctx) => {
   const objX = -d_o * SCALE;
   const objY = h_o * SCALE;
@@ -292,6 +376,9 @@ const drawMirrorRay = (ctx) => {
   }
 }
 
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
 const drawLensRay = (ctx) => {
   const objX = -d_o * SCALE;
   const objY = h_o * SCALE;
@@ -324,16 +411,21 @@ const drawLensRay = (ctx) => {
       ddaRay(ctx, 0, imgY, objX, objY, { color: "purple" });
     } else {
       dda(ctx, -focalPos, 0, 0, imgY, { color: "purple" });
-      ddaRay(ctx, -focalPos, 0, objX, objY, { color: "purple" });
       if (d_i > 0) {
+        dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
         dda(ctx, -CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple", style: "dashed" });
+        ddaRay(ctx, -focalPos, 0, 0, imgY, { color: "purple", negative: true });
       } else {
+        ddaRay(ctx, -focalPos, 0, objX, objY, { color: "purple" });
         dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
       }
     }
   }
 }
 
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
 const drawLabels = (ctx) => {
   const objX = X_ORIGIN - d_o * SCALE;
   const objY = Y_ORIGIN - h_o * SCALE;
@@ -407,4 +499,3 @@ const update = () => {
 }
 
 update();
-
