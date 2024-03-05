@@ -423,7 +423,7 @@ const drawLens = (ctx) => {
   } else {
     midpoint(
       ctx,
-      (X_ORIGIN - (-f) * 2 * SCALE) + (0.3 * (-f) * SCALE),
+      (X_ORIGIN - (-f) * 2 * SCALE) + (0.3 * (-f) * SCALE) - 1,
       Y_ORIGIN,
       -f * 2 * SCALE,
       X_ORIGIN,
@@ -433,7 +433,7 @@ const drawLens = (ctx) => {
     );
     midpoint(
       ctx,
-      (X_ORIGIN - f * 2 * SCALE) - (0.3 * (-f) * SCALE),
+      (X_ORIGIN - f * 2 * SCALE) - (0.3 * (-f) * SCALE) + 1,
       Y_ORIGIN,
       -f * 2 * SCALE,
       X_ORIGIN - 0.3 * (-f) * SCALE,
