@@ -71,6 +71,7 @@ let posX = 0;
 let posY = 0;
 let isHolding = {
   focal: false,
+  invertFocal: false,
   object: false,
 }
 
@@ -80,6 +81,7 @@ canvas.addEventListener("pointermove", (e) => {
 
   if (
     isAroundFocal(posX, posY) ||
+    isAroundInvertFocal(posX, posY) && sim === -1 ||
     isAroundObject(posX, posY)
   ) {
     canvas.style.cursor = "grab";
@@ -97,6 +99,18 @@ canvas.addEventListener("pointermove", (e) => {
     update();
   }
 
+  if (sim === -1) {
+    if (isHolding.invertFocal) {
+      canvas.style.cursor = "grabbing";
+      if (type === 1) {
+        focalLength.value = (posX - X_ORIGIN) / SCALE;
+      } else {
+        focalLength.value = (X_ORIGIN - posX) / SCALE;
+      }
+      update();
+    }
+  }
+
   if (isHolding.object) {
     canvas.style.cursor = "grabbing";
     objDistance.value = (X_ORIGIN - posX) / SCALE;
@@ -110,6 +124,10 @@ canvas.addEventListener("pointerdown", () => {
     isHolding.focal = true;
     canvas.style.cursor = "grabbing";
   }
+  if (isAroundInvertFocal(posX, posY)) {
+    isHolding.invertFocal = true;
+    canvas.style.cursor = "grabbing";
+  }
   if (isAroundObject(posX, posY)) {
     isHolding.object = true;
     canvas.style.cursor = "grabbing";
@@ -119,12 +137,13 @@ canvas.addEventListener("pointerdown", () => {
 canvas.addEventListener("pointerup", () => {
   if (
     isAroundFocal(posX, posY) ||
+    isAroundInvertFocal(posX, posY) ||
     isAroundObject(posX, posY)
   ) {
     canvas.style.cursor = "grab";
   }
-  // canvas.style.cursor = "default"
   isHolding.focal = false;
+  isHolding.invertFocal = false;
   isHolding.object = false;
 })
 
@@ -142,6 +161,19 @@ const isAroundFocal = (x, y) => {
   )
 }
 
+/**
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+const isAroundInvertFocal = (x, y) => {
+  return (
+    x >= X_ORIGIN - (-f) * SCALE - 25 &&
+    x <= X_ORIGIN - (-f) * SCALE + 25 &&
+    y >= Y_ORIGIN - 25 &&
+    y <= Y_ORIGIN + 25
+  )
+}
 
 /**
  * @param {number} x
@@ -398,7 +430,6 @@ const drawMirror = (ctx) => {
 const drawLens = (ctx) => {
   ctx.fillStyle = "black";
 
-  console.log(f);
   if (type === 1) {
     midpoint(
       ctx,
