@@ -92,7 +92,6 @@ canvas.addEventListener("pointermove", (e) => {
     if (type === 1) {
       focalLength.value = (X_ORIGIN - posX) / SCALE;
     } else {
-      console.log((X_ORIGIN + posX) / SCALE)
       focalLength.value = (posX - X_ORIGIN) / SCALE;
     }
     update();
@@ -203,12 +202,12 @@ const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
       }
     }
 
-    y += 0.5;
+    y += 1;
     if (P <= 0) {
-      P = P + 2 * y + 0.5;
+      P = P + 2 * y + 1;
     } else {
-      x -= 0.5;
-      P = P + 2 * y - 2 * x + 0.5;
+      x -= 1;
+      P = P + 2 * y - 2 * x + 1;
     }
   }
 }
@@ -367,16 +366,82 @@ const drawImage = (ctx) => {
  */
 const drawMirror = (ctx) => {
   ctx.fillStyle = "black";
-  midpoint(
-    ctx,
-    X_ORIGIN - f * 2 * SCALE,
-    Y_ORIGIN,
-    f * 2 * SCALE,
-    X_ORIGIN - 0.3 * f * SCALE,
-    Y_ORIGIN - f * 2 * SCALE,
-    X_ORIGIN,
-    Y_ORIGIN + f * 2 * SCALE
-  );
+
+  if (type === 1) {
+    midpoint(
+      ctx,
+      X_ORIGIN - f * 2 * SCALE,
+      Y_ORIGIN,
+      f * 2 * SCALE,
+      X_ORIGIN - 0.3 * f * SCALE,
+      Y_ORIGIN - f * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN + f * 2 * SCALE
+    );
+  } else {
+    midpoint(
+      ctx,
+      X_ORIGIN - f * 2 * SCALE,
+      Y_ORIGIN,
+      -f * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN + f * 2 * SCALE,
+      X_ORIGIN - 0.3 * f * SCALE,
+      Y_ORIGIN - f * 2 * SCALE
+    );
+  }
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
+const drawLens = (ctx) => {
+  ctx.fillStyle = "black";
+
+  console.log(f);
+  if (type === 1) {
+    midpoint(
+      ctx,
+      X_ORIGIN - f * 2 * SCALE,
+      Y_ORIGIN,
+      f * 2 * SCALE,
+      X_ORIGIN - 0.3 * f * SCALE,
+      Y_ORIGIN - f * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN + f * 2 * SCALE
+    );
+    midpoint(
+      ctx,
+      X_ORIGIN - (-f) * 2 * SCALE,
+      Y_ORIGIN,
+      -(-f) * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN + (-f) * 2 * SCALE,
+      X_ORIGIN - 0.3 * (-f) * SCALE,
+      Y_ORIGIN - (-f) * 2 * SCALE
+    );
+  } else {
+    midpoint(
+      ctx,
+      (X_ORIGIN - (-f) * 2 * SCALE) + (0.3 * (-f) * SCALE),
+      Y_ORIGIN,
+      -f * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN - (-f) * 2 * SCALE,
+      X_ORIGIN - 0.3 * f * SCALE,
+      Y_ORIGIN + (-f) * 2 * SCALE
+    );
+    midpoint(
+      ctx,
+      (X_ORIGIN - f * 2 * SCALE) - (0.3 * (-f) * SCALE),
+      Y_ORIGIN,
+      -f * 2 * SCALE,
+      X_ORIGIN - 0.3 * (-f) * SCALE,
+      Y_ORIGIN + f * 2 * SCALE,
+      X_ORIGIN,
+      Y_ORIGIN - f * 2 * SCALE
+    );
+  }
 }
 
 /**
@@ -568,11 +633,16 @@ const update = () => {
 
   drawBase(ctx);
   drawObject(ctx);
-  drawMirror(ctx);
   drawImage(ctx);
   drawFocal(ctx);
   drawCurvature(ctx);
   drawLabels(ctx);
+
+  if (sim === 1) {
+    drawMirror(ctx);
+  } else {
+    drawLens(ctx);
+  }
 
   if (Number(selectedSim.value) === 1) {
     drawMirrorRay(ctx);
