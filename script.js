@@ -67,15 +67,6 @@ for (let i = 0; i < typeSelections.length; i++) {
 const menu = document.getElementById('checkbox-menu');
 menu.addEventListener("input", () => update());
 
-const drawCircle = (ctx, cx, cy, r) => {
-  for (let x = cx + r; x >= cx + r - 50; x -= 0.5) {
-    yPos = Math.sqrt(r ** 2 - (x - cx) ** 2) + cy;
-    yNeg = -Math.sqrt(r ** 2 - (x - cx) ** 2) + cy;
-    ctx.fillRect(x, yPos, 1, 1);
-    ctx.fillRect(x, yNeg, 1, 1);
-  }
-}
-
 let posX = 0;
 let posY = 0;
 let isHolding = {
@@ -87,7 +78,17 @@ canvas.addEventListener("pointermove", (e) => {
   posX = e.clientX;
   posY = e.clientY;
 
+  if (
+    isAroundFocal(posX, posY) ||
+    isAroundObject(posX, posY)
+  ) {
+    canvas.style.cursor = "grab";
+  } else {
+    canvas.style.cursor = "default";
+  }
+
   if (isHolding.focal) {
+    canvas.style.cursor = "grabbing";
     if (type === 1) {
       focalLength.value = (X_ORIGIN - posX) / SCALE;
     } else {
@@ -98,6 +99,7 @@ canvas.addEventListener("pointermove", (e) => {
   }
 
   if (isHolding.object) {
+    canvas.style.cursor = "grabbing";
     objDistance.value = (X_ORIGIN - posX) / SCALE;
     objHeight.value = (Y_ORIGIN - posY) / SCALE;
     update();
@@ -107,13 +109,22 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("pointerdown", () => {
   if (isAroundFocal(posX, posY)) {
     isHolding.focal = true;
+    canvas.style.cursor = "grabbing";
   }
   if (isAroundObject(posX, posY)) {
     isHolding.object = true;
+    canvas.style.cursor = "grabbing";
   }
 })
 
 canvas.addEventListener("pointerup", () => {
+  if (
+    isAroundFocal(posX, posY) ||
+    isAroundObject(posX, posY)
+  ) {
+    canvas.style.cursor = "grab";
+  }
+  // canvas.style.cursor = "default"
   isHolding.focal = false;
   isHolding.object = false;
 })
@@ -145,6 +156,61 @@ const isAroundObject = (x, y) => {
     y >= Y_ORIGIN - h_o * SCALE - 25 &&
     y <= Y_ORIGIN - h_o * SCALE + 25
   )
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} r
+ * @param {number} xMin
+ * @param {number} yMin
+ * @param {number} xMax
+ * @param {number} yMax
+ */
+const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
+  let x = r;
+  let y = 0;
+
+  let P = 1 - r;
+  while (x > y) {
+
+    if (x + cx <= xMax && y + cy <= yMax && x + cx >= xMin && y + cy >= yMin) {
+      ctx.fillRect(x + cx, y + cy, 1, 1);
+    }
+    if (-x + cx <= xMax && y + cy <= yMax && -x + cx >= xMin && y + cy >= yMin) {
+      ctx.fillRect(-x + cx, y + cy, 1, 1);
+    }
+    if (x + cx <= xMax && -y + cy <= yMax && x + cx >= xMin && -y + cy >= yMin) {
+      ctx.fillRect(x + cx, -y + cy, 1, 1);
+    }
+    if (-x + cx <= xMax && -y + cy <= yMax && -x + cx >= xMin && -y + cy >= yMin) {
+      ctx.fillRect(-x + cx, -y + cy, 1, 1);
+    }
+
+    if (x !== y) {
+      if (y + cx <= xMax && x + cy <= yMax && y + cx >= xMin && x + cy >= yMin) {
+        ctx.fillRect(y + cx, x + cy, 1, 1);
+      }
+      if (-y + cx <= xMax && x + cy <= yMax && -y + cx >= xMin && x + cy >= yMin) {
+        ctx.fillRect(-y + cx, x + cy, 1, 1);
+      }
+      if (y + cx <= xMax && -x + cy <= yMax && y + cx >= xMin && -x + cy >= yMin) {
+        ctx.fillRect(y + cx, -x + cy, 1, 1);
+      }
+      if (-y + cx <= xMax && -x + cy <= yMax && -y + cx >= xMin && -x + cy >= yMin) {
+        ctx.fillRect(-y + cx, -x + cy, 1, 1);
+      }
+    }
+
+    y += 0.5;
+    if (P <= 0) {
+      P = P + 2 * y + 0.5;
+    } else {
+      x -= 0.5;
+      P = P + 2 * y - 2 * x + 0.5;
+    }
+  }
 }
 
 /**
@@ -294,6 +360,23 @@ const drawImage = (ctx) => {
   dda(ctx, width / 2 + imgX, armHeight, imgX, imgY, { color: "blue" });
   dda(ctx, (-width / 2) + imgX, armHeight, imgX, 0, { color: "blue" });
   dda(ctx, width / 2 + imgX, armHeight, imgX, 0, { color: "blue" });
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
+const drawMirror = (ctx) => {
+  ctx.fillStyle = "black";
+  midpoint(
+    ctx,
+    X_ORIGIN - f * 2 * SCALE,
+    Y_ORIGIN,
+    f * 2 * SCALE,
+    X_ORIGIN - 0.3 * f * SCALE,
+    Y_ORIGIN - f * 2 * SCALE,
+    X_ORIGIN,
+    Y_ORIGIN + f * 2 * SCALE
+  );
 }
 
 /**
@@ -485,11 +568,11 @@ const update = () => {
 
   drawBase(ctx);
   drawObject(ctx);
+  drawMirror(ctx);
   drawImage(ctx);
   drawFocal(ctx);
   drawCurvature(ctx);
   drawLabels(ctx);
-  drawCircle(ctx, X_ORIGIN - f * 2 * SCALE, Y_ORIGIN, f * 2 * SCALE);
 
   if (Number(selectedSim.value) === 1) {
     drawMirrorRay(ctx);
