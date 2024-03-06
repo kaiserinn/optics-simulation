@@ -2,7 +2,7 @@ let CANVAS_WIDTH = window.innerWidth;
 let CANVAS_HEIGHT = window.innerHeight;
 let X_ORIGIN = CANVAS_WIDTH / 2;
 let Y_ORIGIN = CANVAS_HEIGHT / 2;
-const SCALE = 50;
+let SCALE = 50;
 
 let f;
 let d_o;
@@ -52,6 +52,21 @@ for (let i = 0; i < typeSelections.length; i++) {
 
 const menu = document.getElementById('checkbox-menu');
 menu.addEventListener("input", () => update());
+
+const resetButton = document.getElementById("reset-button");
+resetButton.addEventListener("click", () => {
+  SCALE = 50;
+  canvas.style.setProperty("--scale", SCALE + "px")
+  X_ORIGIN = CANVAS_WIDTH / 2;
+  Y_ORIGIN = CANVAS_HEIGHT / 2;
+  update()
+})
+
+document.addEventListener('wheel', (e) => {
+  SCALE = Math.max(SCALE - (e.deltaY / 10), 10)
+  canvas.style.setProperty("--scale", SCALE + "px")
+  update()
+})
 
 let posX = 0;
 let posY = 0;
@@ -638,12 +653,21 @@ const drawLabels = (ctx) => {
   }
 }
 
+let maxSliderX = CANVAS_WIDTH / 2 / SCALE;
+let maxSliderY = CANVAS_HEIGHT / 2 / SCALE;
 const update = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  objDistance.max = X_ORIGIN / SCALE;
-  objHeight.max = Y_ORIGIN / SCALE;
-  focalLength.max = X_ORIGIN / SCALE;
+  if (maxSliderY < Y_ORIGIN / SCALE) {
+    maxSliderY = Y_ORIGIN / SCALE;
+  }
+  objHeight.max = maxSliderY;
+
+  if (maxSliderX < X_ORIGIN / SCALE) {
+    maxSliderX = X_ORIGIN / SCALE;
+  }
+  objDistance.max = maxSliderX;
+  focalLength.max = maxSliderX;
 
   canvas.style.setProperty('--x-origin', X_ORIGIN + "px");
   canvas.style.setProperty('--y-origin', Y_ORIGIN + "px");
