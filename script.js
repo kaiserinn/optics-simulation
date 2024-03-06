@@ -68,6 +68,84 @@ document.addEventListener('wheel', (e) => {
   update()
 })
 
+const evCache = [];
+let prevDiff = -1;
+
+canvas.addEventListener("pointerdown", e => {
+  zoomDown(e);
+  pointerdownHandler(e);
+})
+
+canvas.addEventListener("pointermove", e => {
+  zoomMove(e);
+  pointermoveHandler(e);
+})
+
+canvas.addEventListener("pointerup", e => {
+  zoomUp(e);
+  pointerupHandler();
+})
+
+/**
+ * @param {PointerEvent} ev
+ */
+const zoomDown = (ev) => {
+  evCache.push(ev);
+}
+
+/**
+ * @param {PointerEvent} ev
+ */
+const zoomMove = (ev) => {
+  for (var i = 0; i < evCache.length; i++) {
+    if (ev.pointerId == evCache[i].pointerId) {
+      evCache[i] = ev;
+    break;
+    }
+  }
+
+  if (evCache.length === 2) {
+    const curDiff = Math.sqrt(Math.pow(evCache[1].clientX - evCache[0].clientX, 2) + Math.pow(evCache[1].clientY - evCache[0].clientY, 2));
+    if (prevDiff > 0) {
+      if (curDiff > prevDiff) {
+        SCALE = Math.min(SCALE + 2, 150);
+        canvas.style.setProperty("--scale", SCALE + "px");
+        update()
+      }
+      if (curDiff < prevDiff) {
+        SCALE = Math.max(SCALE - 2, 10);
+        canvas.style.setProperty("--scale", SCALE + "px");
+        update()
+      }
+    }
+    prevDiff = curDiff;
+  }
+}
+
+/**
+ * @param {PointerEvent} ev
+ */
+const zoomUp = (ev) => {
+  removeEvent(ev);
+  if (evCache.length < 2) {
+    prevDiff = -1;
+  }
+}
+
+/**
+ * @param {PointerEvent} ev
+ */
+function removeEvent(ev) {
+  const index = evCache.findIndex(
+    (cachedEv) => cachedEv.pointerId === ev.pointerId,
+  );
+  evCache.splice(index, 1);
+}
+
+canvas.onpointercancel = zoomUp;
+canvas.onpointerout = zoomUp;
+canvas.onpointerleave = zoomUp;
+
 let posX = 0;
 let posY = 0;
 let isHolding = {
@@ -77,7 +155,10 @@ let isHolding = {
   canvas: false,
 }
 
-canvas.addEventListener("pointermove", (e) => {
+/**
+ * @param {PointerEvent} e
+ */
+const pointermoveHandler = (e) => {
   const dPosX = e.clientX - posX;
   const dPosY = e.clientY - posY;
   posX = e.clientX;
@@ -125,14 +206,17 @@ canvas.addEventListener("pointermove", (e) => {
     return;
   }
 
-  if (isHolding.canvas) {
+  if (isHolding.canvas && evCache.length < 2) {
     X_ORIGIN += dPosX;
     Y_ORIGIN += dPosY;
     update();
   }
-})
+}
 
-canvas.addEventListener("pointerdown", (e) => {
+/**
+ * @param {PointerEvent} e
+ */
+const pointerdownHandler = (e) => {
   posX = e.clientX;
   posY = e.clientY;
 
@@ -149,9 +233,12 @@ canvas.addEventListener("pointerdown", (e) => {
     canvas.style.cursor = "grabbing";
   }
   isHolding.canvas = true;
-})
+}
 
-canvas.addEventListener("pointerup", () => {
+/**
+ * @param {PointerEvent} e
+ */
+const pointerupHandler = () => {
   if (
     isAroundFocal(posX, posY) ||
     isAroundInvertFocal(posX, posY) ||
@@ -163,7 +250,7 @@ canvas.addEventListener("pointerup", () => {
   isHolding.invertFocal = false;
   isHolding.object = false;
   isHolding.canvas = false;
-})
+}
 
 /**
  * @param {number} x
