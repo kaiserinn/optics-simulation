@@ -5,7 +5,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: JetBrains Mono, Cascadia Code;
+  font-family:
+    JetBrains Mono,
+    Cascadia Code;
 }
 
 #canvas {
@@ -24,7 +26,7 @@
   left: 1rem;
 
   background-color: rgb(36, 39, 58);
-  padding: .5rem 1rem 1rem 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
   border-radius: 0.5rem;
   color: rgb(202, 211, 245);
 }
@@ -37,14 +39,16 @@
   align-items: center;
   gap: 0.5rem;
 
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 #grab {
   cursor: grab;
   user-select: none;
   text-align: center;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 #distance-slider-label::after {
@@ -83,7 +87,9 @@
   flex-direction: column;
   gap: 0.5rem;
 
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 .radio {
@@ -92,7 +98,7 @@
   gap: 0.5rem;
 }
 
-.radio>label {
+.radio > label {
   border-radius: 0.5rem;
   background-color: rgb(73, 77, 100);
   padding: 0.5rem;
@@ -104,11 +110,11 @@
   opacity: 50%;
 }
 
-.radio-input:checked+label {
+.radio-input:checked + label {
   opacity: 100%;
 }
 
-.menu>label {
+.menu > label {
   font-size: 1.8rem;
   width: 3rem;
   height: 3rem;
@@ -133,13 +139,15 @@
 #reset-button {
   width: 3rem;
   height: 3rem;
-  padding: .7rem;
+  padding: 0.7rem;
   background-color: rgb(36, 39, 58);
   border-radius: 0.5rem;
   cursor: pointer;
   color: rgb(202, 211, 245);
 
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   position: absolute;
   top: 1rem;

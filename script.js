@@ -33,65 +33,65 @@ const inputElements = document.querySelectorAll('input[type="range"]');
 for (let i = 0; i < inputElements.length; i++) {
   inputElements[i].addEventListener("input", () => {
     update();
-  })
+  });
 }
 
 const typeSelections = document.querySelectorAll("input[name='type']");
 for (let i = 0; i < typeSelections.length; i++) {
   typeSelections[i].addEventListener("input", () => {
     update();
-  })
+  });
 }
 
 const simSelections = document.querySelectorAll("input[name='sim']");
 for (let i = 0; i < typeSelections.length; i++) {
   simSelections[i].addEventListener("input", () => {
     update();
-  })
+  });
 }
 
-const menu = document.getElementById('checkbox-menu');
+const menu = document.getElementById("checkbox-menu");
 menu.addEventListener("input", () => update());
 
 const resetButton = document.getElementById("reset-button");
 resetButton.addEventListener("click", () => {
   SCALE = 50;
-  canvas.style.setProperty("--scale", SCALE + "px")
+  canvas.style.setProperty("--scale", SCALE + "px");
   X_ORIGIN = CANVAS_WIDTH / 2;
   Y_ORIGIN = CANVAS_HEIGHT / 2;
-  update()
-})
+  update();
+});
 
-document.addEventListener('wheel', (e) => {
-  SCALE = Math.max(SCALE - (e.deltaY / 10), 10);
+document.addEventListener("wheel", (e) => {
+  SCALE = Math.max(SCALE - e.deltaY / 10, 10);
   canvas.style.setProperty("--scale", SCALE + "px");
-  update()
-})
+  update();
+});
 
 const evCache = [];
 let prevDiff = -1;
 
-canvas.addEventListener("pointerdown", e => {
+canvas.addEventListener("pointerdown", (e) => {
   zoomDown(e);
   pointerdownHandler(e);
-})
+});
 
-canvas.addEventListener("pointermove", e => {
+canvas.addEventListener("pointermove", (e) => {
   zoomMove(e);
   pointermoveHandler(e);
-})
+});
 
-canvas.addEventListener("pointerup", e => {
+canvas.addEventListener("pointerup", (e) => {
   zoomUp(e);
   pointerupHandler();
-})
+});
 
 /**
  * @param {PointerEvent} ev
  */
 const zoomDown = (ev) => {
   evCache.push(ev);
-}
+};
 
 /**
  * @param {PointerEvent} ev
@@ -105,22 +105,24 @@ const zoomMove = (ev) => {
   }
 
   if (evCache.length === 2) {
-    const curDiff = Math.sqrt(Math.pow(evCache[1].clientX - evCache[0].clientX, 2) + Math.pow(evCache[1].clientY - evCache[0].clientY, 2));
+    const curDiff = Math.sqrt(
+      Math.pow(evCache[1].clientX - evCache[0].clientX, 2) + Math.pow(evCache[1].clientY - evCache[0].clientY, 2)
+    );
     if (prevDiff > 0) {
       if (curDiff > prevDiff) {
         SCALE = Math.min(SCALE + 2, 150);
         canvas.style.setProperty("--scale", SCALE + "px");
-        update()
+        update();
       }
       if (curDiff < prevDiff) {
         SCALE = Math.max(SCALE - 2, 10);
         canvas.style.setProperty("--scale", SCALE + "px");
-        update()
+        update();
       }
     }
     prevDiff = curDiff;
   }
-}
+};
 
 /**
  * @param {PointerEvent} ev
@@ -130,15 +132,13 @@ const zoomUp = (ev) => {
   if (evCache.length < 2) {
     prevDiff = -1;
   }
-}
+};
 
 /**
  * @param {PointerEvent} ev
  */
 function removeEvent(ev) {
-  const index = evCache.findIndex(
-    (cachedEv) => cachedEv.pointerId === ev.pointerId,
-  );
+  const index = evCache.findIndex((cachedEv) => cachedEv.pointerId === ev.pointerId);
   evCache.splice(index, 1);
 }
 
@@ -154,7 +154,7 @@ let isHolding = {
   object: false,
   canvas: false,
   controls: false,
-}
+};
 
 /**
  * @param {PointerEvent} e
@@ -165,11 +165,7 @@ const pointermoveHandler = (e) => {
   posX = e.clientX;
   posY = e.clientY;
 
-  if (
-    isAroundFocal(posX, posY) ||
-    isAroundInvertFocal(posX, posY) && sim === -1 ||
-    isAroundObject(posX, posY)
-  ) {
+  if (isAroundFocal(posX, posY) || (isAroundInvertFocal(posX, posY) && sim === -1) || isAroundObject(posX, posY)) {
     canvas.style.cursor = "grab";
   } else {
     canvas.style.cursor = "default";
@@ -212,7 +208,7 @@ const pointermoveHandler = (e) => {
     Y_ORIGIN += dPosY;
     update();
   }
-}
+};
 
 /**
  * @param {PointerEvent} e
@@ -234,24 +230,20 @@ const pointerdownHandler = (e) => {
     canvas.style.cursor = "grabbing";
   }
   isHolding.canvas = true;
-}
+};
 
 /**
  * @param {PointerEvent} e
  */
 const pointerupHandler = () => {
-  if (
-    isAroundFocal(posX, posY) ||
-    isAroundInvertFocal(posX, posY) ||
-    isAroundObject(posX, posY)
-  ) {
+  if (isAroundFocal(posX, posY) || isAroundInvertFocal(posX, posY) || isAroundObject(posX, posY)) {
     canvas.style.cursor = "grab";
   }
   isHolding.focal = false;
   isHolding.invertFocal = false;
   isHolding.object = false;
   isHolding.canvas = false;
-}
+};
 
 /**
  * @param {number} x
@@ -259,13 +251,8 @@ const pointerupHandler = () => {
  * @returns {boolean}
  */
 const isAroundFocal = (x, y) => {
-  return (
-    x >= X_ORIGIN - f * SCALE - 25 &&
-    x <= X_ORIGIN - f * SCALE + 25 &&
-    y >= Y_ORIGIN - 25 &&
-    y <= Y_ORIGIN + 25
-  )
-}
+  return x >= X_ORIGIN - f * SCALE - 25 && x <= X_ORIGIN - f * SCALE + 25 && y >= Y_ORIGIN - 25 && y <= Y_ORIGIN + 25;
+};
 
 /**
  * @param {number} x
@@ -273,13 +260,8 @@ const isAroundFocal = (x, y) => {
  * @returns {boolean}
  */
 const isAroundInvertFocal = (x, y) => {
-  return (
-    x >= X_ORIGIN - (-f) * SCALE - 25 &&
-    x <= X_ORIGIN - (-f) * SCALE + 25 &&
-    y >= Y_ORIGIN - 25 &&
-    y <= Y_ORIGIN + 25
-  )
-}
+  return x >= X_ORIGIN - -f * SCALE - 25 && x <= X_ORIGIN - -f * SCALE + 25 && y >= Y_ORIGIN - 25 && y <= Y_ORIGIN + 25;
+};
 
 /**
  * @param {number} x
@@ -292,18 +274,18 @@ const isAroundObject = (x, y) => {
     x <= X_ORIGIN - d_o * SCALE + 25 &&
     y >= Y_ORIGIN - h_o * SCALE - 25 &&
     y <= Y_ORIGIN - h_o * SCALE + 25
-  )
-}
+  );
+};
 
 const inputsOuterContainerEl = document.querySelector(".inputs-outer-container");
 const grabEl = document.getElementById("grab");
 
-grabEl.addEventListener("pointerdown", e => {
+grabEl.addEventListener("pointerdown", (e) => {
   isHolding.controls = true;
-  grabEl.style.cursor = "grabbing"
-})
+  grabEl.style.cursor = "grabbing";
+});
 
-document.body.addEventListener("pointermove", e => {
+document.body.addEventListener("pointermove", (e) => {
   if (isHolding.controls) {
     canvas.style.cursor = "grabbing";
     let posX = e.clientX - inputsOuterContainerEl.clientWidth / 2;
@@ -312,13 +294,13 @@ document.body.addEventListener("pointermove", e => {
       inputsOuterContainerEl.style.left = posX + "px";
     }
   }
-})
+});
 
 document.body.addEventListener("pointerup", () => {
   isHolding.controls = false;
-  grabEl.style.cursor = "grab"
-  canvas.style.cursor = "default"
-})
+  grabEl.style.cursor = "grab";
+  canvas.style.cursor = "default";
+});
 
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -336,7 +318,6 @@ const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
 
   let P = 1 - r;
   while (x > y) {
-
     if (x + cx <= xMax && y + cy <= yMax && x + cx >= xMin && y + cy >= yMin) {
       ctx.fillRect(x + cx, y + cy, 1, 1);
     }
@@ -373,7 +354,7 @@ const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
       P = P + 2 * y - 2 * x + 1;
     }
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -383,14 +364,7 @@ const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
  * @param {number} y2 Titik y akhir
  * @param {{color: string, style: "normal" | "dashed"}} [{color="black", style="normal"}={color:"black", style:"normal"}]
  */
-const dda = (
-  ctx,
-  x1,
-  y1,
-  x2,
-  y2,
-  { color = "black", style = "normal" } = { color: "black", style: "normal" }
-) => {
+const dda = (ctx, x1, y1, x2, y2, { color = "black", style = "normal" } = { color: "black", style: "normal" }) => {
   const dx = x2 - x1;
   const dy = y2 - y1;
   const step = Math.max(Math.abs(dx), Math.abs(dy));
@@ -409,13 +383,13 @@ const dda = (
       if (j % 12 === 0) {
         noPixel = !noPixel;
       }
-      j++
+      j++;
       if (noPixel) {
-        continue
+        continue;
       }
     }
     ctx.fillRect(x1, y1, 1, 1);
-    j++
+    j++;
   }
 };
 
@@ -443,7 +417,6 @@ const ddaRay = (
     left: false,
   }
 ) => {
-
   const dx = x2 - x1;
   const dy = y2 - y1;
   const step = Math.max(Math.abs(dx), Math.abs(dy));
@@ -456,10 +429,18 @@ const ddaRay = (
   let i = 0;
   let noPixel = false;
   while (true) {
-    if (top) { if (y1 <= 0) break; }
-    if (right) { if (x1 >= CANVAS_WIDTH) break; }
-    if (bottom) { if (y1 >= CANVAS_HEIGHT) break; }
-    if (left) { if (x1 <= 0) break; }
+    if (top) {
+      if (y1 <= 0) break;
+    }
+    if (right) {
+      if (x1 >= CANVAS_WIDTH) break;
+    }
+    if (bottom) {
+      if (y1 >= CANVAS_HEIGHT) break;
+    }
+    if (left) {
+      if (x1 <= 0) break;
+    }
 
     x1 = negative ? x1 - xIncrement : x1 + xIncrement;
     y1 = negative ? y1 - yIncrement : y1 + yIncrement;
@@ -467,13 +448,13 @@ const ddaRay = (
       if (i % 12 === 0) {
         noPixel = !noPixel;
       }
-      i++
+      i++;
       if (noPixel) {
         continue;
       }
     }
     ctx.fillRect(x1, y1, 1, 1);
-    i++
+    i++;
   }
 };
 
@@ -485,41 +466,41 @@ const drawBase = (ctx) => {
   dda(ctx, 0, Y_ORIGIN, CANVAS_WIDTH, Y_ORIGIN);
 
   dda(ctx, X_ORIGIN, 0, X_ORIGIN, CANVAS_HEIGHT);
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawObject = (ctx) => {
-  const width = (0.3 * h_o * SCALE) * 2;
+  const width = 0.3 * h_o * SCALE * 2;
   const armHeight = Y_ORIGIN - 0.8 * h_o * SCALE;
   const objX = X_ORIGIN - d_o * SCALE;
   const objY = Y_ORIGIN - h_o * SCALE;
 
   dda(ctx, objX, Y_ORIGIN, objX, objY, { color: "red" });
-  dda(ctx, (-width / 2) + objX, armHeight, width / 2 + objX, armHeight, { color: "red" });
-  dda(ctx, (-width / 2) + objX, armHeight, objX, objY, { color: "red" });
+  dda(ctx, -width / 2 + objX, armHeight, width / 2 + objX, armHeight, { color: "red" });
+  dda(ctx, -width / 2 + objX, armHeight, objX, objY, { color: "red" });
   dda(ctx, width / 2 + objX, armHeight, objX, objY, { color: "red" });
-  dda(ctx, (-width / 2) + objX, armHeight, objX, Y_ORIGIN, { color: "red" });
+  dda(ctx, -width / 2 + objX, armHeight, objX, Y_ORIGIN, { color: "red" });
   dda(ctx, width / 2 + objX, armHeight, objX, Y_ORIGIN, { color: "red" });
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawImage = (ctx) => {
-  const width = (0.3 * h_i * SCALE) * 2;
+  const width = 0.3 * h_i * SCALE * 2;
   const armHeight = Y_ORIGIN - 0.8 * h_i * SCALE;
   const imgX = X_ORIGIN - d_i * SCALE;
   const imgY = Y_ORIGIN - h_i * SCALE;
 
   dda(ctx, imgX, Y_ORIGIN, imgX, imgY, { color: "blue" });
-  dda(ctx, (-width / 2) + imgX, armHeight, width / 2 + imgX, armHeight, { color: "blue" });
-  dda(ctx, (-width / 2) + imgX, armHeight, imgX, imgY, { color: "blue" });
+  dda(ctx, -width / 2 + imgX, armHeight, width / 2 + imgX, armHeight, { color: "blue" });
+  dda(ctx, -width / 2 + imgX, armHeight, imgX, imgY, { color: "blue" });
   dda(ctx, width / 2 + imgX, armHeight, imgX, imgY, { color: "blue" });
-  dda(ctx, (-width / 2) + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
+  dda(ctx, -width / 2 + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
   dda(ctx, width / 2 + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -550,7 +531,7 @@ const drawMirror = (ctx) => {
       Y_ORIGIN - f * 2 * SCALE
     );
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -571,37 +552,37 @@ const drawLens = (ctx) => {
     );
     midpoint(
       ctx,
-      X_ORIGIN - (-f) * 2 * SCALE - 1,
+      X_ORIGIN - -f * 2 * SCALE - 1,
       Y_ORIGIN,
       -(-f) * 2 * SCALE,
       X_ORIGIN,
-      Y_ORIGIN + (-f) * 2 * SCALE,
-      X_ORIGIN - 0.3 * (-f) * SCALE,
-      Y_ORIGIN - (-f) * 2 * SCALE
+      Y_ORIGIN + -f * 2 * SCALE,
+      X_ORIGIN - 0.3 * -f * SCALE,
+      Y_ORIGIN - -f * 2 * SCALE
     );
   } else {
     midpoint(
       ctx,
-      (X_ORIGIN - (-f) * 2 * SCALE) + (0.3 * (-f) * SCALE) - 1,
+      X_ORIGIN - -f * 2 * SCALE + 0.3 * -f * SCALE - 1,
       Y_ORIGIN,
       -f * 2 * SCALE,
       X_ORIGIN,
-      Y_ORIGIN - (-f) * 2 * SCALE,
+      Y_ORIGIN - -f * 2 * SCALE,
       X_ORIGIN - 0.3 * f * SCALE,
-      Y_ORIGIN + (-f) * 2 * SCALE
+      Y_ORIGIN + -f * 2 * SCALE
     );
     midpoint(
       ctx,
-      (X_ORIGIN - f * 2 * SCALE) - (0.3 * (-f) * SCALE) + 1,
+      X_ORIGIN - f * 2 * SCALE - 0.3 * -f * SCALE + 1,
       Y_ORIGIN,
       -f * 2 * SCALE,
-      X_ORIGIN - 0.3 * (-f) * SCALE,
+      X_ORIGIN - 0.3 * -f * SCALE,
       Y_ORIGIN + f * 2 * SCALE,
       X_ORIGIN,
       Y_ORIGIN - f * 2 * SCALE
     );
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -613,7 +594,7 @@ const drawFocal = (ctx) => {
   if (sim === -1) {
     ctx.fillRect(X_ORIGIN + f * SCALE - 2, Y_ORIGIN - 2, 4, 4);
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -625,7 +606,7 @@ const drawCurvature = (ctx) => {
   if (sim === -1) {
     ctx.fillRect(X_ORIGIN + f * 2 * SCALE - 2, Y_ORIGIN - 2, 4, 4);
   }
-}
+};
 
 window.addEventListener("resize", () => {
   CANVAS_WIDTH = window.innerWidth;
@@ -637,7 +618,7 @@ window.addEventListener("resize", () => {
   canvas.height = CANVAS_HEIGHT;
 
   update();
-})
+});
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -659,7 +640,14 @@ const drawMirrorRay = (ctx) => {
   } else if (f < 0) {
     dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
     ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", right: true, bottom: true });
-    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top: true, left: true, bottom: true, right: true });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, {
+      color: "green",
+      negative: true,
+      top: true,
+      left: true,
+      bottom: true,
+      right: true,
+    });
   }
 
   // rule 3
@@ -667,9 +655,9 @@ const drawMirrorRay = (ctx) => {
     if (d_o !== f) {
       dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple" });
       if (d_i > 0) {
-        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true })
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
       } else if (d_i < 0) {
-        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", bottom: true, left: true })
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", bottom: true, left: true });
         dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
       }
     }
@@ -680,7 +668,7 @@ const drawMirrorRay = (ctx) => {
       ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
     }
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -730,7 +718,7 @@ const drawLensRay = (ctx) => {
       }
     }
   }
-}
+};
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -764,12 +752,12 @@ const drawLabels = (ctx) => {
   if (sim === -1) {
     ctx.fillText("Kurvatur", X_ORIGIN + f * 2 * SCALE, Y_ORIGIN);
   }
-}
+};
 
 let maxSliderX = CANVAS_WIDTH / 2 / SCALE;
 let maxSliderY = CANVAS_HEIGHT / 2 / SCALE;
 const update = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (maxSliderY < Y_ORIGIN / SCALE) {
     maxSliderY = Y_ORIGIN / SCALE;
@@ -782,12 +770,12 @@ const update = () => {
   objDistance.max = maxSliderX;
   focalLength.max = maxSliderX;
 
-  canvas.style.setProperty('--x-origin', X_ORIGIN + "px");
-  canvas.style.setProperty('--y-origin', Y_ORIGIN + "px");
+  canvas.style.setProperty("--x-origin", X_ORIGIN + "px");
+  canvas.style.setProperty("--y-origin", Y_ORIGIN + "px");
 
-  const menu = document.getElementById('checkbox-menu');
-  const label = document.querySelector('.menu > label');
-  const buttonsContainerEl = document.getElementsByClassName('buttons-container');
+  const menu = document.getElementById("checkbox-menu");
+  const label = document.querySelector(".menu > label");
+  const buttonsContainerEl = document.getElementsByClassName("buttons-container");
   if (menu.checked) {
     buttonsContainerEl[0].style.display = "flex";
     label.innerHTML = "x";
@@ -826,6 +814,6 @@ const update = () => {
   } else {
     drawLensRay(ctx);
   }
-}
+};
 
 update();
