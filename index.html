@@ -1,59 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Physics Simulation</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="style.css" rel="stylesheet" />
-    <script defer src="script.js"></script>
-  </head>
-  <body>
-    <canvas id="canvas"></canvas>
 
-    <div class="container">
-      <div class="menu">
-        <input type="checkbox" id="checkbox-menu" hidden />
-        <label for="checkbox-menu">=</label>
-      </div>
+<head>
+  <title>Physics Simulation</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="style.css" rel="stylesheet" />
+  <script defer src="script.js"></script>
+</head>
 
-      <div class="buttons-container">
-        <div class="radio">
-          <input type="radio" class="radio-input" id="mirror" name="sim" value="1" checked hidden />
-          <label for="mirror">Cermin</label>
+<body>
+  <canvas id="canvas"></canvas>
 
-          <input type="radio" class="radio-input" id="lens" name="sim" value="-1" hidden />
-          <label for="lens">Lensa</label>
-        </div>
-
-        <div class="radio">
-          <input type="radio" class="radio-input" id="concave" name="type" value="1" checked hidden />
-          <label for="concave">Cekung</label>
-
-          <input type="radio" class="radio-input" id="convex" name="type" value="-1" hidden />
-          <label for="convex">Cembung</label>
-        </div>
-      </div>
+  <div class="container">
+    <div class="menu">
+      <input type="checkbox" id="checkbox-menu" hidden />
+      <label for="checkbox-menu">=</label>
     </div>
 
-    <div class="inputs-outer-container">
-      <div class="inputs-container">
-        <label for="distance-slider" id="distance-slider-label"></label>
-        <input type="range" min="0" step="0.01" value="5" id="distance-slider" />
+    <div class="buttons-container">
+      <div class="radio">
+        <input type="radio" class="radio-input" id="mirror" name="sim" value="1" checked hidden />
+        <label for="mirror">Cermin</label>
+
+        <input type="radio" class="radio-input" id="lens" name="sim" value="-1" hidden />
+        <label for="lens">Lensa</label>
       </div>
-      <div class="inputs-container">
-        <label for="height-slider" id="height-slider-label"></label>
-        <input type="range" min="0" step="0.01" value="3" id="height-slider" />
-      </div>
-      <div class="inputs-container">
-        <label for="focal-slider" id="focal-slider-label"></label>
-        <input type="range" min="0" step="0.01" value="2" id="focal-slider" />
+
+      <div class="radio">
+        <input type="radio" class="radio-input" id="concave" name="type" value="1" checked hidden />
+        <label for="concave">Cekung</label>
+
+        <input type="radio" class="radio-input" id="convex" name="type" value="-1" hidden />
+        <label for="convex">Cembung</label>
       </div>
     </div>
+  </div>
 
-    <button id="reset-button">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-        <path fill-rule="evenodd" d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z" clip-rule="evenodd" />
-      </svg>
-    </button>
-  </body>
+  <div class="inputs-outer-container">
+    <div id="grab">:::::</div>
+    <div class="inputs-container">
+      <label for="distance-slider" id="distance-slider-label"></label>
+      <input type="range" min="0" step="0.01" value="5" id="distance-slider" />
+    </div>
+    <div class="inputs-container">
+      <label for="height-slider" id="height-slider-label"></label>
+      <input type="range" min="0" step="0.01" value="3" id="height-slider" />
+    </div>
+    <div class="inputs-container">
+      <label for="focal-slider" id="focal-slider-label"></label>
+      <input type="range" min="0" step="0.01" value="2" id="focal-slider" />
+    </div>
+  </div>
+
+  <button id="reset-button">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
+      <path fill-rule="evenodd"
+        d="M13.836 2.477a.75.75 0 0 1 .75.75v3.182a.75.75 0 0 1-.75.75h-3.182a.75.75 0 0 1 0-1.5h1.37l-.84-.841a4.5 4.5 0 0 0-7.08.932.75.75 0 0 1-1.3-.75 6 6 0 0 1 9.44-1.242l.842.84V3.227a.75.75 0 0 1 .75-.75Zm-.911 7.5A.75.75 0 0 1 13.199 11a6 6 0 0 1-9.44 1.241l-.84-.84v1.371a.75.75 0 0 1-1.5 0V9.591a.75.75 0 0 1 .75-.75H5.35a.75.75 0 0 1 0 1.5H3.98l.841.841a4.5 4.5 0 0 0 7.08-.932.75.75 0 0 1 1.025-.273Z"
+        clip-rule="evenodd" />
+    </svg>
+  </button>
+</body>
+
 </html>

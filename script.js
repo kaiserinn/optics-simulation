@@ -100,7 +100,7 @@ const zoomMove = (ev) => {
   for (var i = 0; i < evCache.length; i++) {
     if (ev.pointerId == evCache[i].pointerId) {
       evCache[i] = ev;
-    break;
+      break;
     }
   }
 
@@ -153,6 +153,7 @@ let isHolding = {
   invertFocal: false,
   object: false,
   canvas: false,
+  controls: false,
 }
 
 /**
@@ -293,6 +294,31 @@ const isAroundObject = (x, y) => {
     y <= Y_ORIGIN - h_o * SCALE + 25
   )
 }
+
+const inputsOuterContainerEl = document.querySelector(".inputs-outer-container");
+const grabEl = document.getElementById("grab");
+
+grabEl.addEventListener("pointerdown", e => {
+  isHolding.controls = true;
+  grabEl.style.cursor = "grabbing"
+})
+
+document.body.addEventListener("pointermove", e => {
+  if (isHolding.controls) {
+    canvas.style.cursor = "grabbing";
+    let posX = e.clientX - inputsOuterContainerEl.clientWidth / 2;
+
+    if (posX >= 16 && posX + inputsOuterContainerEl.clientWidth <= window.innerWidth - 16) {
+      inputsOuterContainerEl.style.left = posX + "px";
+    }
+  }
+})
+
+document.body.addEventListener("pointerup", () => {
+  isHolding.controls = false;
+  grabEl.style.cursor = "grab"
+  canvas.style.cursor = "default"
+})
 
 /**
  * @param {CanvasRenderingContext2D} ctx

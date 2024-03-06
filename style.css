@@ -19,12 +19,12 @@
 }
 
 .inputs-outer-container {
-  position: fixed;
+  position: absolute;
   bottom: 1rem;
   left: 1rem;
 
   background-color: rgb(36, 39, 58);
-  padding: 1rem;
+  padding: .5rem 1rem 1rem 1rem;
   border-radius: 0.5rem;
   color: rgb(202, 211, 245);
 }
@@ -40,12 +40,21 @@
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
+#grab {
+  cursor: grab;
+  user-select: none;
+  text-align: center;
+  margin-bottom: .5rem;
+}
+
 #distance-slider-label::after {
   content: "Jarak Objek (do)";
 }
+
 #height-slider-label::after {
   content: "Tinggi Objek (ho)";
 }
+
 #focal-slider-label::after {
   content: "Jarak Fokus (f)";
 }
@@ -54,9 +63,11 @@
   #distance-slider-label::after {
     content: "do";
   }
+
   #height-slider-label::after {
     content: "ho";
   }
+
   #focal-slider-label::after {
     content: "f";
   }
@@ -81,7 +92,7 @@
   gap: 0.5rem;
 }
 
-.radio > label {
+.radio>label {
   border-radius: 0.5rem;
   background-color: rgb(73, 77, 100);
   padding: 0.5rem;
@@ -93,25 +104,21 @@
   opacity: 50%;
 }
 
-.radio-input:checked + label {
+.radio-input:checked+label {
   opacity: 100%;
 }
 
-.menu {
+.menu>label {
   font-size: 1.8rem;
   width: 3rem;
   height: 3rem;
   background-color: rgb(36, 39, 58);
+  display: block;
   color: rgb(202, 211, 245);
   cursor: pointer;
   border-radius: 0.5rem;
-
-  display: grid;
-  place-content: center;
-}
-
-.menu > label {
-  cursor: pointer;
+  text-align: center;
+  user-select: none;
 }
 
 .container {
