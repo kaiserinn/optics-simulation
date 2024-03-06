@@ -50,6 +50,13 @@ for (let i = 0; i < typeSelections.length; i++) {
   });
 }
 
+const objectSelections = document.querySelectorAll("input[name='object']");
+for (let i = 0; i < typeSelections.length; i++) {
+  objectSelections[i].addEventListener("input", () => {
+    update();
+  });
+}
+
 const menu = document.getElementById("checkbox-menu");
 menu.addEventListener("input", () => update());
 
@@ -312,9 +319,10 @@ document.body.addEventListener("pointerup", () => {
  * @param {number} xMax
  * @param {number} yMax
  */
-const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax) => {
+const midpoint = (ctx, cx, cy, r, xMin, yMin, xMax, yMax, { color= "black" } = { color: "black" }) => {
   let x = r;
   let y = 0;
+  ctx.fillStyle = color;
 
   let P = 1 - r;
   while (x > y) {
@@ -488,6 +496,71 @@ const drawObject = (ctx) => {
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
+const drawSecondObject = (ctx) => {
+  midpoint(
+    ctx,
+    X_ORIGIN-d_o*SCALE,
+    Y_ORIGIN-(h_o-0.2*h_o)*SCALE,
+    0.2*h_o*SCALE,
+    X_ORIGIN-(d_o+0.2*h_o)*SCALE,
+    Y_ORIGIN-h_o*SCALE,
+    X_ORIGIN-(d_o-0.2*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_o-0.2*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-(d_o+0.2*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_o+0.2*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-(d_o+0.4*h_o)*SCALE,
+    Y_ORIGIN,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_o+0.08*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-(d_o+0.2*h_o)*SCALE,
+    Y_ORIGIN,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-d_o*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-d_o*SCALE,
+    Y_ORIGIN,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_o-0.08*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-(d_o-0.2*h_o)*SCALE,
+    Y_ORIGIN,
+    { color: "red" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_o-0.2*h_o)*SCALE,
+    Y_ORIGIN-(h_o-(0.13*h_o*2))*SCALE,
+    X_ORIGIN-(d_o-0.4*h_o)*SCALE,
+    Y_ORIGIN,
+    { color: "red" }
+  )
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
 const drawImage = (ctx) => {
   const width = 0.3 * h_i * SCALE * 2;
   const armHeight = Y_ORIGIN - 0.8 * h_i * SCALE;
@@ -501,6 +574,87 @@ const drawImage = (ctx) => {
   dda(ctx, -width / 2 + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
   dda(ctx, width / 2 + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
 };
+
+/**
+ * @param {CanvasRenderingContext2D} ctx 2d rendering context
+ */
+const drawSecondImage = (ctx) => {
+  let decision = d_i < 0;
+  if (sim === 1) decision = !decision;
+  if (d_o !== -f && d_o !== f && decision ) {
+    midpoint(
+      ctx,
+      X_ORIGIN-d_i*SCALE,
+      Y_ORIGIN-(h_i-0.2*h_i)*SCALE,
+      Math.abs(0.2*h_i*SCALE),
+      X_ORIGIN-(d_i-0.2*h_i)*SCALE,
+      Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+      X_ORIGIN-(d_i+0.2*h_i)*SCALE,
+      Y_ORIGIN-h_i*SCALE,
+      { color: "blue" }
+    )
+  } else if (d_o !== -f && d_o !== f && !decision ) {
+    midpoint(
+      ctx,
+      X_ORIGIN-d_i*SCALE,
+      Y_ORIGIN-(h_i-0.2*h_i)*SCALE,
+      Math.abs(0.2*h_i*SCALE),
+      X_ORIGIN-(d_i+0.2*h_i)*SCALE,
+      Y_ORIGIN-h_i*SCALE,
+      X_ORIGIN-(d_i-0.2*h_i)*SCALE,
+      Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+      { color: "blue" }
+    )
+  }
+  dda(
+    ctx,
+    X_ORIGIN-(d_i-0.2*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-(d_i+0.2*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    { color: "blue" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_i+0.2*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-(d_i+0.4*h_i)*SCALE,
+    Y_ORIGIN,
+    { color: "blue" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_i+0.08*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-(d_i+0.2*h_i)*SCALE,
+    Y_ORIGIN,
+    { color: "blue" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-d_i*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-d_i*SCALE,
+    Y_ORIGIN,
+    { color: "blue" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_i-0.08*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-(d_i-0.2*h_i)*SCALE,
+    Y_ORIGIN,
+    { color: "blue" }
+  )
+  dda(
+    ctx,
+    X_ORIGIN-(d_i-0.2*h_i)*SCALE,
+    Y_ORIGIN-(h_i-(0.13*h_i*2))*SCALE,
+    X_ORIGIN-(d_i-0.4*h_i)*SCALE,
+    Y_ORIGIN,
+    { color: "blue" }
+  )
+}
 
 /**
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
@@ -670,7 +824,7 @@ const drawMirrorRay = (ctx) => {
   }
 
   // rule 4
-  if (d_o !== f && d_o !== 0 && f !== 0) {
+  if (d_o !== f && d_o !== 0 && f !== 0 && h_o !== 0) {
     ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", top: true, left: true});
     if (f < 0) {
       ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", style: "dashed", bottom: true, right: true});
@@ -680,7 +834,7 @@ const drawMirrorRay = (ctx) => {
     } else {
       if (d_i < 0) {
         ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", negative: true, bottom: true, right: true});
-        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", style: "dashed", bottom: true, right: true});
+        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", style: "dashed", top: true, right: true});
       } else {
         ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", bottom: true, right: true});
       }
@@ -815,11 +969,18 @@ const update = () => {
   h_i = (-d_i / (Number(selectedSim.value) * d_o)) * h_o;
 
   drawBase(ctx);
-  drawObject(ctx);
-  drawImage(ctx);
   drawFocal(ctx);
   drawCurvature(ctx);
   drawLabels(ctx);
+
+  const selectedObject = document.querySelector("input[name='object']:checked");
+  if (selectedObject.value === "object1") {
+    drawObject(ctx);
+    drawImage(ctx);
+  } else {
+    drawSecondObject(ctx);
+    drawSecondImage(ctx);
+  }
 
   if (sim === 1) {
     drawMirror(ctx);
