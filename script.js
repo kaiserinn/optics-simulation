@@ -668,6 +668,24 @@ const drawMirrorRay = (ctx) => {
       ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
     }
   }
+
+  // rule 4
+  if (d_o !== f && d_o !== 0 && f !== 0) {
+    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", top: true, left: true});
+    if (f < 0) {
+      ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", style: "dashed", bottom: true, right: true});
+      if (d_i < 0) {
+        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", negative: true, bottom: true, right: true});
+      }
+    } else {
+      if (d_i < 0) {
+        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", negative: true, bottom: true, right: true});
+        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", style: "dashed", bottom: true, right: true});
+      } else {
+        ddaRay(ctx, X_ORIGIN, Y_ORIGIN, imgX, imgY, { color: "teal", bottom: true, right: true});
+      }
+    }
+  }
 };
 
 /**
