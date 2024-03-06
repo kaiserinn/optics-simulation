@@ -5,7 +5,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font: JetBrains Mono, monospace;
+  font-family: JetBrains Mono, Cascadia Code;
 }
 
 #canvas {
@@ -97,16 +97,21 @@
   opacity: 100%;
 }
 
-.menu > label {
-  font-size: 2rem;
+.menu {
+  font-size: 1.8rem;
   width: 3rem;
   height: 3rem;
   background-color: rgb(36, 39, 58);
-  display: block;
-  text-align: center;
-  border-radius: 0.5rem;
-  cursor: pointer;
   color: rgb(202, 211, 245);
+  cursor: pointer;
+  border-radius: 0.5rem;
+
+  display: grid;
+  place-content: center;
+}
+
+.menu > label {
+  cursor: pointer;
 }
 
 .container {
@@ -119,16 +124,19 @@
 }
 
 #reset-button {
-  font-size: 2rem;
   width: 3rem;
   height: 3rem;
+  padding: .7rem;
   background-color: rgb(36, 39, 58);
-  text-align: center;
   border-radius: 0.5rem;
   cursor: pointer;
   color: rgb(202, 211, 245);
 
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
   position: absolute;
   top: 1rem;
   right: 1rem;
+
+  border: none;
 }

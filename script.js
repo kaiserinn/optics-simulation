@@ -63,8 +63,8 @@ resetButton.addEventListener("click", () => {
 })
 
 document.addEventListener('wheel', (e) => {
-  SCALE = Math.max(SCALE - (e.deltaY / 10), 10)
-  canvas.style.setProperty("--scale", SCALE + "px")
+  SCALE = Math.max(SCALE - (e.deltaY / 10), 10);
+  canvas.style.setProperty("--scale", SCALE + "px");
   update()
 })
 
@@ -539,14 +539,14 @@ const drawMirrorRay = (ctx) => {
   // rule 1
   if (f > 0) {
     dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
-    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom:true, left:true });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom: true, left: true });
     if (d_i < 0) {
-      ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top: true, right: true});
+      ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top: true, right: true });
     }
   } else if (f < 0) {
     dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
-    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", right:true, bottom:true });
-    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top:true, left:true, bottom:true, right:true });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", right: true, bottom: true });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top: true, left: true, bottom: true, right: true });
   }
 
   // rule 3
@@ -554,9 +554,9 @@ const drawMirrorRay = (ctx) => {
     if (d_o !== f) {
       dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple" });
       if (d_i > 0) {
-        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color:"purple", top:true, left:true})
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true })
       } else if (d_i < 0) {
-        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color:"purple", bottom:true, left:true})
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", bottom: true, left: true })
         dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
       }
     }
@@ -564,7 +564,7 @@ const drawMirrorRay = (ctx) => {
     if (d_o !== 0) {
       dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple" });
       dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
-      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true });
+      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
     }
   }
 }
@@ -583,21 +583,21 @@ const drawLensRay = (ctx) => {
   if (f !== 0) {
     if (type === 1) {
       dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
-      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", bottom:true, left:true });
-      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top:true, right:true });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", bottom: true, left: true });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top: true, right: true });
     } else if (type === -1) {
       dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
-      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom:true, right:true });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom: true, right: true });
       if (d_i > 0 && d_o !== -f) {
-        ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top:true, left:true });
+        ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top: true, left: true });
       }
     }
   }
 
   // rule 2
   if (d_o !== 0 && f !== 0) {
-    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", negative: true, bottom:true, right:true });
-    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", top:true, left:true });
+    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", negative: true, bottom: true, right: true });
+    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", top: true, left: true });
   }
 
   // rule 3
@@ -605,14 +605,14 @@ const drawLensRay = (ctx) => {
     if (type === 1) {
       dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
       dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
-      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true });
+      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
     } else {
       if (d_i > 0) {
         dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
         dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
-        ddaRay(ctx, X_ORIGIN, imgY, X_ORIGIN + f * SCALE, Y_ORIGIN, { color: "purple", bottom:true, left:true});
+        ddaRay(ctx, X_ORIGIN, imgY, X_ORIGIN + f * SCALE, Y_ORIGIN, { color: "purple", bottom: true, left: true });
       } else {
-        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true});
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top: true, left: true });
         dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
       }
     }
