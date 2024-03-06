@@ -23,29 +23,15 @@ const ctx = canvas.getContext("2d");
 
 /** @type {HTMLInputElement} Slider untuk jarak objek ke titik 0 */
 const objDistance = document.getElementById("distance-slider");
-objDistance.max = CANVAS_WIDTH / 2 / SCALE;
-
-/** @type {HTMLInputElement} Input Box untuk jarak objek ke titik 0 */
-const objDistanceInput = document.getElementById("distance-input");
 
 /** @type {HTMLInputElement} Slider untuk tinggi objek */
 const objHeight = document.getElementById("height-slider");
-objHeight.max = CANVAS_HEIGHT / 2 / SCALE;
-
-/** @type {HTMLInputElement} Input Box untuk tinggi objek */
-const objHeightInput = document.getElementById("height-input");
 
 const focalLength = document.getElementById("focal-slider");
-focalLength.max = CANVAS_WIDTH / 2 / SCALE;
-
-const focalLengthInput = document.getElementById("focal-input");
 
 const inputElements = document.querySelectorAll('input[type="range"]');
 for (let i = 0; i < inputElements.length; i++) {
   inputElements[i].addEventListener("input", () => {
-    objDistanceInput.value = objDistance.value;
-    objHeightInput.value = objHeight.value;
-    focalLengthInput.value = focalLength.value;
     update();
   })
 }
@@ -73,9 +59,12 @@ let isHolding = {
   focal: false,
   invertFocal: false,
   object: false,
+  canvas: false,
 }
 
 canvas.addEventListener("pointermove", (e) => {
+  const dPosX = e.clientX - posX;
+  const dPosY = e.clientY - posY;
   posX = e.clientX;
   posY = e.clientY;
 
@@ -97,6 +86,7 @@ canvas.addEventListener("pointermove", (e) => {
       focalLength.value = (posX - X_ORIGIN) / SCALE;
     }
     update();
+    return;
   }
 
   if (sim === -1) {
@@ -108,6 +98,7 @@ canvas.addEventListener("pointermove", (e) => {
         focalLength.value = (X_ORIGIN - posX) / SCALE;
       }
       update();
+      return;
     }
   }
 
@@ -116,10 +107,20 @@ canvas.addEventListener("pointermove", (e) => {
     objDistance.value = (X_ORIGIN - posX) / SCALE;
     objHeight.value = (Y_ORIGIN - posY) / SCALE;
     update();
+    return;
+  }
+
+  if (isHolding.canvas) {
+    X_ORIGIN += dPosX;
+    Y_ORIGIN += dPosY;
+    update();
   }
 })
 
-canvas.addEventListener("pointerdown", () => {
+canvas.addEventListener("pointerdown", (e) => {
+  posX = e.clientX;
+  posY = e.clientY;
+
   if (isAroundFocal(posX, posY)) {
     isHolding.focal = true;
     canvas.style.cursor = "grabbing";
@@ -132,6 +133,7 @@ canvas.addEventListener("pointerdown", () => {
     isHolding.object = true;
     canvas.style.cursor = "grabbing";
   }
+  isHolding.canvas = true;
 })
 
 canvas.addEventListener("pointerup", () => {
@@ -145,6 +147,7 @@ canvas.addEventListener("pointerup", () => {
   isHolding.focal = false;
   isHolding.invertFocal = false;
   isHolding.object = false;
+  isHolding.canvas = false;
 })
 
 /**
@@ -260,11 +263,6 @@ const dda = (
   y2,
   { color = "black", style = "normal" } = { color: "black", style: "normal" }
 ) => {
-  x1 = X_ORIGIN + x1;
-  y1 = Y_ORIGIN - y1;
-  x2 = X_ORIGIN + x2;
-  y2 = Y_ORIGIN - y2;
-
   const dx = x2 - x1;
   const dy = y2 - y1;
   const step = Math.max(Math.abs(dx), Math.abs(dy));
@@ -280,7 +278,7 @@ const dda = (
     x1 += xIncrement;
     y1 += yIncrement;
     if (style === "dashed") {
-      if (j % 10 === 0) {
+      if (j % 12 === 0) {
         noPixel = !noPixel;
       }
       j++
@@ -299,7 +297,7 @@ const dda = (
  * @param {number} y1 Titik y awal
  * @param {number} x2 Titik x akhir
  * @param {number} y2 Titik y akhir
- * @param {{color: string, style: "normal" | "dashed", negative: false}} [{color="black", isVirtual=false, style="normal"}={color:"black", style:"normal", negative:false}]
+ * @param {{color: string, style: "normal" | "dashed", negative: false}} [{color="black", style="normal"}={color:"black", style:"normal", negative:false}]
  */
 const ddaRay = (
   ctx,
@@ -307,15 +305,16 @@ const ddaRay = (
   y1,
   x2,
   y2,
-  { color = "black", style = "normal", negative = false } = {
+  { color = "black", style = "normal", negative = false, top = false, right = false, bottom = false, left = false } = {
     color: "black",
     style: "normal",
+    negative: false,
+    top: false,
+    right: false,
+    bottom: false,
+    left: false,
   }
 ) => {
-  x1 = X_ORIGIN + x1;
-  y1 = Y_ORIGIN - y1;
-  x2 = X_ORIGIN + x2;
-  y2 = Y_ORIGIN - y2;
 
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -329,14 +328,15 @@ const ddaRay = (
   let i = 0;
   let noPixel = false;
   while (true) {
-    if (x1 <= 0 || y1 <= 0 || x1 >= CANVAS_WIDTH || y1 >= CANVAS_HEIGHT) {
-      break;
-    }
+    if (top) { if (y1 <= 0) break; }
+    if (right) { if (x1 >= CANVAS_WIDTH) break; }
+    if (bottom) { if (y1 >= CANVAS_HEIGHT) break; }
+    if (left) { if (x1 <= 0) break; }
 
     x1 = negative ? x1 - xIncrement : x1 + xIncrement;
     y1 = negative ? y1 - yIncrement : y1 + yIncrement;
     if (style === "dashed") {
-      if (i % 10 === 0) {
+      if (i % 12 === 0) {
         noPixel = !noPixel;
       }
       i++
@@ -354,9 +354,9 @@ const ddaRay = (
  */
 const drawBase = (ctx) => {
   // principal line
-  dda(ctx, -CANVAS_WIDTH / 2, 0, CANVAS_WIDTH / 2, 0);
+  dda(ctx, 0, Y_ORIGIN, CANVAS_WIDTH, Y_ORIGIN);
 
-  dda(ctx, 0, -CANVAS_HEIGHT / 2, 0, CANVAS_HEIGHT + 100);
+  dda(ctx, X_ORIGIN, 0, X_ORIGIN, CANVAS_HEIGHT);
 }
 
 /**
@@ -364,16 +364,16 @@ const drawBase = (ctx) => {
  */
 const drawObject = (ctx) => {
   const width = (0.3 * h_o * SCALE) * 2;
-  const armHeight = 0.8 * h_o * SCALE;
-  const objX = -d_o * SCALE;
-  const objY = h_o * SCALE;
+  const armHeight = Y_ORIGIN - 0.8 * h_o * SCALE;
+  const objX = X_ORIGIN - d_o * SCALE;
+  const objY = Y_ORIGIN - h_o * SCALE;
 
-  dda(ctx, objX, 0, objX, objY, { color: "red" });
+  dda(ctx, objX, Y_ORIGIN, objX, objY, { color: "red" });
   dda(ctx, (-width / 2) + objX, armHeight, width / 2 + objX, armHeight, { color: "red" });
   dda(ctx, (-width / 2) + objX, armHeight, objX, objY, { color: "red" });
   dda(ctx, width / 2 + objX, armHeight, objX, objY, { color: "red" });
-  dda(ctx, (-width / 2) + objX, armHeight, objX, 0, { color: "red" });
-  dda(ctx, width / 2 + objX, armHeight, objX, 0, { color: "red" });
+  dda(ctx, (-width / 2) + objX, armHeight, objX, Y_ORIGIN, { color: "red" });
+  dda(ctx, width / 2 + objX, armHeight, objX, Y_ORIGIN, { color: "red" });
 }
 
 /**
@@ -381,16 +381,16 @@ const drawObject = (ctx) => {
  */
 const drawImage = (ctx) => {
   const width = (0.3 * h_i * SCALE) * 2;
-  const armHeight = 0.8 * h_i * SCALE;
-  const imgX = -d_i * SCALE;
-  const imgY = h_i * SCALE;
+  const armHeight = Y_ORIGIN - 0.8 * h_i * SCALE;
+  const imgX = X_ORIGIN - d_i * SCALE;
+  const imgY = Y_ORIGIN - h_i * SCALE;
 
-  dda(ctx, imgX, 0, imgX, imgY, { color: "blue" });
+  dda(ctx, imgX, Y_ORIGIN, imgX, imgY, { color: "blue" });
   dda(ctx, (-width / 2) + imgX, armHeight, width / 2 + imgX, armHeight, { color: "blue" });
   dda(ctx, (-width / 2) + imgX, armHeight, imgX, imgY, { color: "blue" });
   dda(ctx, width / 2 + imgX, armHeight, imgX, imgY, { color: "blue" });
-  dda(ctx, (-width / 2) + imgX, armHeight, imgX, 0, { color: "blue" });
-  dda(ctx, width / 2 + imgX, armHeight, imgX, 0, { color: "blue" });
+  dda(ctx, (-width / 2) + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
+  dda(ctx, width / 2 + imgX, armHeight, imgX, Y_ORIGIN, { color: "blue" });
 }
 
 /**
@@ -433,7 +433,7 @@ const drawLens = (ctx) => {
   if (type === 1) {
     midpoint(
       ctx,
-      X_ORIGIN - f * 2 * SCALE,
+      X_ORIGIN - f * 2 * SCALE + 1,
       Y_ORIGIN,
       f * 2 * SCALE,
       X_ORIGIN - 0.3 * f * SCALE,
@@ -443,7 +443,7 @@ const drawLens = (ctx) => {
     );
     midpoint(
       ctx,
-      X_ORIGIN - (-f) * 2 * SCALE,
+      X_ORIGIN - (-f) * 2 * SCALE - 1,
       Y_ORIGIN,
       -(-f) * 2 * SCALE,
       X_ORIGIN,
@@ -515,42 +515,41 @@ window.addEventListener("resize", () => {
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawMirrorRay = (ctx) => {
-  const objX = -d_o * SCALE;
-  const objY = h_o * SCALE;
-  const imgX = -d_i * SCALE;
-  const imgY = h_i * SCALE;
-  const focalPos = -f * SCALE;
+  const objX = X_ORIGIN - d_o * SCALE;
+  const objY = Y_ORIGIN - h_o * SCALE;
+  const imgX = X_ORIGIN - d_i * SCALE;
+  const imgY = Y_ORIGIN - h_i * SCALE;
+  const focalPos = X_ORIGIN - f * SCALE;
 
   // rule 1
   if (f > 0) {
-    dda(ctx, -CANVAS_WIDTH / 2, objY, 0, objY, { color: "green" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green" });
+    dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom:true, left:true });
     if (d_i < 0) {
-      ddaRay(ctx, 0, objY, imgX, imgY, { color: "green", style: "dashed" });
+      ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top: true, right: true});
     }
-  } else {
-    dda(ctx, -CANVAS_WIDTH / 2, objY, 0, objY, { color: "green" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green", style: "dashed" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green", negative: true });
+  } else if (f < 0) {
+    dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", right:true, bottom:true });
+    ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top:true, left:true, bottom:true, right:true });
   }
 
   // rule 3
   if (f > 0) {
     if (d_o !== f) {
-      dda(ctx, -CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
-      dda(ctx, focalPos, 0, 0, imgY, { color: "purple" });
+      dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple" });
       if (d_i > 0) {
-        ddaRay(ctx, focalPos, 0, objX, objY, { color: "purple" });
-      } else {
-        dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple", style: "dashed" });
-        ddaRay(ctx, objX, objY, focalPos, 0, { color: "purple" });
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color:"purple", top:true, left:true})
+      } else if (d_i < 0) {
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color:"purple", bottom:true, left:true})
+        dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
       }
     }
   } else {
     if (d_o !== 0) {
-      dda(ctx, -CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
-      dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple", style: "dashed" });
-      ddaRay(ctx, 0, imgY, objX, objY, { color: "purple" });
+      dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple" });
+      dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
+      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true });
     }
   }
 }
@@ -559,44 +558,47 @@ const drawMirrorRay = (ctx) => {
  * @param {CanvasRenderingContext2D} ctx 2d rendering context
  */
 const drawLensRay = (ctx) => {
-  const objX = -d_o * SCALE;
-  const objY = h_o * SCALE;
-  const imgX = -d_i * SCALE;
-  const imgY = h_i * SCALE;
-  const focalPos = -f * SCALE;
+  const objX = X_ORIGIN - d_o * SCALE;
+  const objY = Y_ORIGIN - h_o * SCALE;
+  const imgX = X_ORIGIN - d_i * SCALE;
+  const imgY = Y_ORIGIN - h_i * SCALE;
+  const focalPos = X_ORIGIN - f * SCALE;
 
   // rule 1
-  if (type === 1) {
-    dda(ctx, -CANVAS_WIDTH / 2, objY, 0, objY, { color: "green" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green", style: "dashed" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green", negative: true });
-  } else if (type === -1) {
-    dda(ctx, -CANVAS_WIDTH / 2, objY, 0, objY, { color: "green" });
-    ddaRay(ctx, 0, objY, focalPos, 0, { color: "green" });
-    if (d_i > 0 && d_o !== -f) {
-      ddaRay(ctx, 0, objY, imgX, imgY, { color: "green", style: "dashed" });
+  if (f !== 0) {
+    if (type === 1) {
+      dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", style: "dashed", bottom:true, left:true });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", negative: true, top:true, right:true });
+    } else if (type === -1) {
+      dda(ctx, 0, objY, X_ORIGIN, objY, { color: "green" });
+      ddaRay(ctx, X_ORIGIN, objY, focalPos, Y_ORIGIN, { color: "green", bottom:true, right:true });
+      if (d_i > 0 && d_o !== -f) {
+        ddaRay(ctx, X_ORIGIN, objY, imgX, imgY, { color: "green", style: "dashed", top:true, left:true });
+      }
     }
   }
 
   // rule 2
-  ddaRay(ctx, 0, 0, objX, objY, { color: "teal", negative: true });
-  ddaRay(ctx, 0, 0, objX, objY, { color: "teal" });
+  if (d_o !== 0 && f !== 0) {
+    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", negative: true, bottom:true, right:true });
+    ddaRay(ctx, X_ORIGIN, Y_ORIGIN, objX, objY, { color: "teal", top:true, left:true });
+  }
 
   // rule 3
   if (d_o !== 0 && d_o !== -f) {
     if (type === 1) {
-      dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
-      dda(ctx, -CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple", style: "dashed" });
-      ddaRay(ctx, 0, imgY, objX, objY, { color: "purple" });
+      dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
+      dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
+      ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true });
     } else {
-      dda(ctx, -focalPos, 0, 0, imgY, { color: "purple" });
       if (d_i > 0) {
-        dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
-        dda(ctx, -CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple", style: "dashed" });
-        ddaRay(ctx, -focalPos, 0, 0, imgY, { color: "purple", negative: true });
+        dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
+        dda(ctx, 0, imgY, X_ORIGIN, imgY, { color: "purple", style: "dashed" });
+        ddaRay(ctx, X_ORIGIN, imgY, X_ORIGIN + f * SCALE, Y_ORIGIN, { color: "purple", bottom:true, left:true});
       } else {
-        ddaRay(ctx, -focalPos, 0, objX, objY, { color: "purple" });
-        dda(ctx, CANVAS_WIDTH / 2, imgY, 0, imgY, { color: "purple" });
+        ddaRay(ctx, X_ORIGIN, imgY, objX, objY, { color: "purple", top:true, left:true});
+        dda(ctx, CANVAS_WIDTH, imgY, X_ORIGIN, imgY, { color: "purple" });
       }
     }
   }
@@ -638,6 +640,13 @@ const drawLabels = (ctx) => {
 
 const update = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  objDistance.max = X_ORIGIN / SCALE;
+  objHeight.max = Y_ORIGIN / SCALE;
+  focalLength.max = X_ORIGIN / SCALE;
+
+  canvas.style.setProperty('--x-origin', X_ORIGIN + "px");
+  canvas.style.setProperty('--y-origin', Y_ORIGIN + "px");
 
   const menu = document.getElementById('checkbox-menu');
   const label = document.querySelector('.menu > label');

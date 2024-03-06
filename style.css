@@ -9,10 +9,11 @@
 
 #canvas {
   --scale: 50px;
+  touch-action: none;
   display: block;
   background: linear-gradient(to right, transparent 98%, lightgray 98%),
     linear-gradient(to bottom, transparent 98%, lightgray 98%);
-  background-position: 50vw 50vh;
+  background-position: var(--x-origin) var(--y-origin);
   background-size: var(--scale) var(--scale);
 }
 
@@ -28,23 +29,39 @@
 }
 
 .inputs-container {
-  padding: 0.2rem;
+  font-size: 0.9em;
+  padding: 0.3rem;
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
 
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-.input-number {
-  width: 4rem;
+#distance-slider-label::after {
+  content: "Jarak Objek (do)";
+}
+#height-slider-label::after {
+  content: "Tinggi Objek (ho)";
+}
+#focal-slider-label::after {
+  content: "Jarak Fokus (f)";
+}
+
+@media screen and ((max-width: 600px) or (max-height: 600px)) {
+  #distance-slider-label::after {
+    content: "do";
+  }
+  #height-slider-label::after {
+    content: "ho";
+  }
+  #focal-slider-label::after {
+    content: "f";
+  }
 }
 
 .buttons-container {
-  /* position: fixed; */
-  /* top: 1rem; */
-  /* left: 1rem; */
-  /**/
   background-color: rgb(36, 39, 58);
   padding: 1rem;
   border-radius: 0.5rem;
