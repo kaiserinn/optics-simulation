@@ -287,7 +287,7 @@ const isAroundObject = (x, y) => {
 const inputsOuterContainerEl = document.querySelector(".inputs-outer-container");
 const grabEl = document.getElementById("grab");
 
-grabEl.addEventListener("pointerdown", (e) => {
+grabEl.addEventListener("pointerdown", () => {
   isHolding.controls = true;
   grabEl.style.cursor = "grabbing";
 });
@@ -437,18 +437,10 @@ const ddaRay = (
   let i = 0;
   let noPixel = false;
   while (true) {
-    if (top) {
-      if (y1 <= 0) break;
-    }
-    if (right) {
-      if (x1 >= CANVAS_WIDTH) break;
-    }
-    if (bottom) {
-      if (y1 >= CANVAS_HEIGHT) break;
-    }
-    if (left) {
-      if (x1 <= 0) break;
-    }
+    if (top) { if (y1 <= 0) break; }
+    if (right) { if (x1 >= CANVAS_WIDTH) break; }
+    if (bottom) { if (y1 >= CANVAS_HEIGHT) break; }
+    if (left) { if (x1 <= 0) break; }
 
     x1 = negative ? x1 - xIncrement : x1 + xIncrement;
     y1 = negative ? y1 - yIncrement : y1 + yIncrement;
